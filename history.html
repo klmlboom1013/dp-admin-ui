@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>History - Deploy System Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="css/layout.css" rel="stylesheet">
+</head>
+
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark border-bottom border-secondary sticky-top">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand fw-bold" href="./dashboard.html">
+                <i class="bi bi-rocket-takeoff-fill me-2"></i>Deploy System
+            </a>
+            <div class="d-flex align-items-center text-white">
+                <small class="me-3">Admin (김관리)</small>
+                <a href="./login.html" class="btn btn-sm btn-outline-light">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="d-flex">
+        <!-- Sidebar -->
+        <div class="sidebar d-flex flex-column flex-shrink-0 p-3">
+            <span class="sidebar-heading">Monitoring</span>
+            <ul class="nav nav-pills flex-column">
+                <li><a href="./dashboard.html" class="nav-link"><i class="bi bi-speedometer2"></i>대시보드 (Dashboard)</a>
+                </li>
+            </ul>
+            <hr class="text-secondary">
+            <span class="sidebar-heading">Management</span>
+            <ul class="nav nav-pills flex-column mb-auto">
+                <li><a href="./agent-list.html" class="nav-link"><i class="bi bi-hdd-rack"></i>Agent 관리</a></li>
+                <li><a href="./agent-group-list.html" class="nav-link"><i class="bi bi-collection"></i>Agent 그룹 관리</a>
+                </li>
+                <li><a href="./history.html" class="nav-link"><i class="bi bi-clock-history"></i>배포/구동 이력</a></li>
+            </ul>
+            <hr class="text-secondary">
+            <span class="sidebar-heading">System</span>
+            <ul class="nav nav-pills flex-column">
+                <li><a href="#" class="nav-link"><i class="bi bi-people-fill"></i>사용자 관리</a></li>
+                <li><a href="#" class="nav-link"><i class="bi bi-gear-fill"></i>환경 설정</a></li>
+            </ul>
+        </div>
+
+        <!-- Content Area -->
+        <div class="content-area">
+            <h4 class="mb-4 pb-2 border-bottom"><i class="bi bi-clock-history me-2"></i>배포 및 구동 이력</h4>
+
+            <!-- Filters -->
+            <div class="card shadow-sm mb-4 border-0 bg-light">
+                <div class="card-body py-3">
+                    <div class="row g-3 align-items-center">
+                        <div class="col-auto">
+                            <label class="col-form-label fw-bold small text-uppercase text-secondary">Filter by</label>
+                        </div>
+                        <div class="col-auto">
+                            <select class="form-select form-select-sm">
+                                <option selected>전체 에이전트</option>
+                                <option value="1">Pay-WAS-01</option>
+                                <option value="2">Pay-WAS-02</option>
+                            </select>
+                        </div>
+                        <div class="col-auto">
+                            <select class="form-select form-select-sm">
+                                <option selected>전체 유형</option>
+                                <option value="START">Start</option>
+                                <option value="STOP">Stop</option>
+                                <option value="DEPLOY">Deploy</option>
+                            </select>
+                        </div>
+                        <div class="col-auto">
+                            <input type="date" class="form-control form-control-sm">
+                        </div>
+                        <div class="col-auto ms-auto">
+                            <button class="btn btn-primary btn-sm px-3">조회</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- History Table -->
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-0">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th scope="col" class="ps-4">Time</th>
+                                <th scope="col">Agent Info</th>
+                                <th scope="col">Action Type</th>
+                                <th scope="col">User</th>
+                                <th scope="col">Result</th>
+                                <th scope="col" class="text-end pe-4">Details</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="ps-4 text-muted small">2024-01-19 09:35:12</td>
+                                <td>
+                                    <span class="fw-bold">Pay-WAS-01</span>
+                                    <small class="text-muted d-block">192.168.0.10</small>
+                                </td>
+                                <td><span
+                                        class="badge bg-primary bg-opacity-10 text-primary border border-primary">RESTART</span>
+                                </td>
+                                <td>김관리</td>
+                                <td><span class="text-success fw-bold"><i
+                                            class="bi bi-check-circle-fill me-1"></i>Success</span></td>
+                                <td class="text-end pe-4"><button class="btn btn-sm btn-link text-decoration-none">View
+                                        Log</button></td>
+                            </tr>
+                            <tr>
+                                <td class="ps-4 text-muted small">2024-01-19 09:30:00</td>
+                                <td>
+                                    <span class="fw-bold">Order-API-01</span>
+                                    <small class="text-muted d-block">10.20.30.42</small>
+                                </td>
+                                <td><span
+                                        class="badge bg-warning bg-opacity-10 text-warning border border-warning">DEPLOY</span>
+                                </td>
+                                <td>이배포</td>
+                                <td>
+                                    <span class="spinner-border spinner-border-sm text-warning me-1"
+                                        role="status"></span>
+                                    <span class="text-warning fw-bold">Processing</span>
+                                </td>
+                                <td class="text-end pe-4"><button class="btn btn-sm btn-link text-decoration-none">View
+                                        Log</button></td>
+                            </tr>
+                            <tr>
+                                <td class="ps-4 text-muted small">2024-01-18 18:00:22</td>
+                                <td>
+                                    <span class="fw-bold">Pay-WAS-02</span>
+                                    <small class="text-muted d-block">192.168.0.11</small>
+                                </td>
+                                <td><span
+                                        class="badge bg-danger bg-opacity-10 text-danger border border-danger">STOP</span>
+                                </td>
+                                <td>시스템</td>
+                                <td><span class="text-success fw-bold"><i
+                                            class="bi bi-check-circle-fill me-1"></i>Success</span></td>
+                                <td class="text-end pe-4"><button class="btn btn-sm btn-link text-decoration-none">View
+                                        Log</button></td>
+                            </tr>
+                            <tr>
+                                <td class="ps-4 text-muted small">2024-01-18 15:40:11</td>
+                                <td>
+                                    <span class="fw-bold">Order-API-01</span>
+                                    <small class="text-muted d-block">10.20.30.42</small>
+                                </td>
+                                <td><span
+                                        class="badge bg-info bg-opacity-10 text-info border border-info">HEALTH_CHECK</span>
+                                </td>
+                                <td>System Monitor</td>
+                                <td><span class="text-danger fw-bold"><i
+                                            class="bi bi-x-circle-fill me-1"></i>Failed</span></td>
+                                <td class="text-end pe-4"><button class="btn btn-sm btn-link text-decoration-none">View
+                                        Log</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card-footer bg-white d-flex justify-content-end py-3">
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination pagination-sm mb-0">
+                            <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
+                            <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                            <li class="page-item"><a class="page-link" href="#">2</a></li>
+                            <li class="page-item"><a class="page-link" href="#">Next</a></li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/common.js"></script>
+</body>
+
+</html>

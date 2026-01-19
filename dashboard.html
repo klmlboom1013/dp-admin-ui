@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Deploy System Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="css/layout.css" rel="stylesheet">
+</head>
+
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark border-bottom border-secondary sticky-top">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand fw-bold" href="./dashboard.html">
+                <i class="bi bi-rocket-takeoff-fill me-2"></i>Deploy System
+            </a>
+
+            <div class="d-flex align-items-center text-white">
+                <small class="me-3">Admin (김관리)</small>
+                <a href="./login.html" class="btn btn-sm btn-outline-light">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="d-flex">
+
+        <!-- Sidebar -->
+        <div class="sidebar d-flex flex-column flex-shrink-0 p-3">
+            <span class="sidebar-heading">Monitoring</span>
+            <ul class="nav nav-pills flex-column">
+                <li class="nav-item">
+                    <a href="./dashboard.html" class="nav-link">
+                        <i class="bi bi-speedometer2"></i>
+                        대시보드 (Dashboard)
+                    </a>
+                </li>
+                <!--
+            <li>
+                <a href="./monitoring.html" class="nav-link">
+                    <i class="bi bi-activity"></i>
+                    실시간 모니터링
+                </a>
+            </li>
+            -->
+            </ul>
+
+            <hr class="text-secondary">
+
+            <span class="sidebar-heading">Management</span>
+            <ul class="nav nav-pills flex-column mb-auto">
+                <li>
+                    <a href="./agent-list.html" class="nav-link">
+                        <i class="bi bi-hdd-rack"></i>
+                        Agent 관리
+                    </a>
+                </li>
+                <li>
+                    <a href="./agent-group-list.html" class="nav-link">
+                        <i class="bi bi-collection"></i>
+                        Agent 그룹 관리
+                    </a>
+                </li>
+                <!--
+            <li>
+                <a href="./agent-form.html" class="nav-link">
+                    <i class="bi bi-plus-circle-dotted"></i>
+                    Agent 등록
+                </a>
+            </li>
+            -->
+                <li>
+                    <a href="./history.html" class="nav-link">
+                        <i class="bi bi-clock-history"></i>
+                        배포/구동 이력
+                    </a>
+                </li>
+            </ul>
+
+            <hr class="text-secondary">
+
+            <span class="sidebar-heading">System</span>
+            <ul class="nav nav-pills flex-column">
+                <li>
+                    <a href="#" class="nav-link">
+                        <i class="bi bi-people-fill"></i>
+                        사용자 관리
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="nav-link">
+                        <i class="bi bi-gear-fill"></i>
+                        환경 설정
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Content Area -->
+        <div class="content-area">
+            <h4 class="mb-4 pb-2 border-bottom">📂 전체 서비스 현황</h4>
+
+            <!-- Summary Cards -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card text-white bg-primary mb-3 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">Total Agents</h5>
+                            <p class="card-text fs-2">5</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-white bg-success mb-3 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">Running</h5>
+                            <p class="card-text fs-2">4</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-white bg-danger mb-3 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">Stopped</h5>
+                            <p class="card-text fs-2">0</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-white bg-warning mb-3 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">Deploying</h5>
+                            <p class="card-text fs-2">1</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Agent Grid -->
+            <h5 class="mb-3">Agent List</h5>
+            <div class="row">
+                <!-- Agent 1 -->
+                <div class="col-md-4 mb-4">
+                    <div class="card card-hover h-100 border-0 shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 class="card-title fw-bold">Pay-WAS-01</h5>
+                                <span class="badge rounded-pill bg-light text-dark border">
+                                    <span class="status-dot bg-running"></span>
+                                    <span>RUNNING</span>
+                                </span>
+                            </div>
+                            <p class="text-muted small mb-1">IP: 192.168.0.10</p>
+                            <p class="text-muted small">Last Deploy: 2024-01-14 14:00</p>
+
+                            <div class="d-grid gap-2 mt-3">
+                                <a href="./agent-details.html" class="btn btn-outline-primary btn-sm">제어 콘솔 입장</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Agent 2 -->
+                <div class="col-md-4 mb-4">
+                    <div class="card card-hover h-100 border-0 shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 class="card-title fw-bold">Pay-WAS-02</h5>
+                                <span class="badge rounded-pill bg-light text-dark border">
+                                    <span class="status-dot bg-stopped"></span>
+                                    <span>STOPPED</span>
+                                </span>
+                            </div>
+                            <p class="text-muted small mb-1">IP: 192.168.0.11</p>
+                            <p class="text-muted small">Last Deploy: 2024-01-14 14:05</p>
+
+                            <div class="d-grid gap-2 mt-3">
+                                <a href="./agent-details.html" class="btn btn-outline-primary btn-sm">제어 콘솔 입장</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Agent 3 (Deploying) -->
+                <div class="col-md-4 mb-4">
+                    <div class="card card-hover h-100 border-0 shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 class="card-title fw-bold">Order-API-01</h5>
+                                <span class="badge rounded-pill bg-light text-dark border">
+                                    <span class="status-dot bg-deploying"></span>
+                                    <span>DEPLOYING...</span>
+                                </span>
+                            </div>
+                            <p class="text-muted small mb-1">IP: 10.20.30.42</p>
+                            <p class="text-muted small">Last Deploy: 2024-01-19 09:30</p>
+
+                            <div class="d-grid gap-2 mt-3">
+                                <button class="btn btn-primary btn-sm" disabled>
+                                    <span class="spinner-border spinner-border-sm" role="status"
+                                        aria-hidden="true"></span>
+                                    배포 진행중...
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/common.js"></script>
+</body>
+
+</html>

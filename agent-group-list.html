@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Group Management - Deploy System Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="css/layout.css" rel="stylesheet">
+</head>
+
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark border-bottom border-secondary sticky-top">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand fw-bold" href="./dashboard.html">
+                <i class="bi bi-rocket-takeoff-fill me-2"></i>Deploy System
+            </a>
+            <div class="d-flex align-items-center text-white">
+                <small class="me-3">Admin (김관리)</small>
+                <a href="./login.html" class="btn btn-sm btn-outline-light">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="d-flex">
+        <!-- Sidebar -->
+        <div class="sidebar d-flex flex-column flex-shrink-0 p-3">
+            <span class="sidebar-heading">Monitoring</span>
+            <ul class="nav nav-pills flex-column">
+                <li><a href="./dashboard.html" class="nav-link"><i class="bi bi-speedometer2"></i>대시보드 (Dashboard)</a>
+                </li>
+            </ul>
+            <hr class="text-secondary">
+            <span class="sidebar-heading">Management</span>
+            <ul class="nav nav-pills flex-column mb-auto">
+                <li><a href="./agent-list.html" class="nav-link"><i class="bi bi-hdd-rack"></i>Agent 관리</a></li>
+                <li><a href="./agent-group-list.html" class="nav-link active"><i class="bi bi-collection"></i>Agent 그룹
+                        관리</a></li>
+                <li><a href="./history.html" class="nav-link"><i class="bi bi-clock-history"></i>배포/구동 이력</a></li>
+            </ul>
+            <hr class="text-secondary">
+            <span class="sidebar-heading">System</span>
+            <ul class="nav nav-pills flex-column">
+                <li><a href="#" class="nav-link"><i class="bi bi-people-fill"></i>사용자 관리</a></li>
+                <li><a href="#" class="nav-link"><i class="bi bi-gear-fill"></i>환경 설정</a></li>
+            </ul>
+        </div>
+
+        <!-- Content Area -->
+        <div class="content-area">
+            <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+                <h4><i class="bi bi-collection me-2"></i>Agent 그룹 관리</h4>
+                <a href="./agent-group-details.html" class="btn btn-primary">
+                    <i class="bi bi-plus-lg"></i> Agent 그룹 생성
+                </a>
+            </div>
+
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-0">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th scope="col" class="ps-4" style="width: 50px;">NO</th>
+                                <th scope="col">Group Name</th>
+                                <th scope="col">Description</th>
+                                <th scope="col">Agent Count</th>
+                                <th scope="col" class="text-end pe-4">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Example Group 1 -->
+                            <tr style="cursor: pointer;"
+                                onclick="window.location.href='./agent-group-details.html?id=G-001&name=Payment-Group&desc=Payment Related Agents'">
+                                <td class="ps-4 fw-bold text-muted">1</td>
+                                <td>
+                                    <div class="fw-bold">Payment-Group</div>
+                                </td>
+                                <td class="text-muted">Payment Related Agents</td>
+                                <td>
+                                    <span class="badge bg-primary rounded-pill">4 Agents</span>
+                                </td>
+                                <td class="text-end pe-4">
+                                    <button class="btn btn-sm btn-outline-danger" title="Delete Group"
+                                        onclick="event.stopPropagation(); deleteGroup(this)">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <!-- Example Group 2 -->
+                            <tr style="cursor: pointer;"
+                                onclick="window.location.href='./agent-group-details.html?id=G-002&name=Order-Group&desc=Order Order Processing Agents'">
+                                <td class="ps-4 fw-bold text-muted">2</td>
+                                <td>
+                                    <div class="fw-bold">Order-Group</div>
+                                </td>
+                                <td class="text-muted">Order Processing Agents</td>
+                                <td>
+                                    <span class="badge bg-primary rounded-pill">2 Agents</span>
+                                </td>
+                                <td class="text-end pe-4">
+                                    <button class="btn btn-sm btn-outline-danger" title="Delete Group"
+                                        onclick="event.stopPropagation(); deleteGroup(this)">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1060">
+        <div id="actionToast" class="toast align-items-center text-bg-dark border-0" role="alert" aria-live="assertive"
+            aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    <span id="toastMessage">Action Completed</span>
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+                    aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/common.js"></script>
+    <script>
+        function deleteGroup(btn) {
+            showConfirm('정말 그룹을 삭제하시겠습니까?\n(그룹을 삭제해도 Agent는 삭제되지 않습니다.)', () => {
+                const row = btn.closest('tr');
+                row.remove();
+                showGlobalToast('Agent 그룹이 삭제되었습니다.', 'warning');
+            });
+        }
+    </script>
+</body>
+
+</html>

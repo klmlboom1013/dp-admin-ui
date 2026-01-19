@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Form - Deploy System Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="css/layout.css" rel="stylesheet">
+</head>
+
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark border-bottom border-secondary sticky-top">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand fw-bold" href="./dashboard.html">
+                <i class="bi bi-rocket-takeoff-fill me-2"></i>Deploy System
+            </a>
+            <div class="d-flex align-items-center text-white">
+                <small class="me-3">Admin (김관리)</small>
+                <a href="./login.html" class="btn btn-sm btn-outline-light">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="d-flex">
+        <!-- Sidebar -->
+        <div class="sidebar d-flex flex-column flex-shrink-0 p-3">
+            <span class="sidebar-heading">Monitoring</span>
+            <ul class="nav nav-pills flex-column">
+                <li><a href="./dashboard.html" class="nav-link"><i class="bi bi-speedometer2"></i>대시보드 (Dashboard)</a>
+                </li>
+            </ul>
+            <hr class="text-secondary">
+            <span class="sidebar-heading">Management</span>
+            <ul class="nav nav-pills flex-column mb-auto">
+                <!-- agent-list와 동일한 메뉴 활성화를 위해 href 주의 -->
+                <li><a href="./agent-list.html" class="nav-link"><i class="bi bi-hdd-rack"></i>Agent 관리</a></li>
+                <li><a href="./agent-group-list.html" class="nav-link"><i class="bi bi-collection"></i>Agent 그룹 관리</a>
+                </li>
+                <li><a href="./history.html" class="nav-link"><i class="bi bi-clock-history"></i>배포/구동 이력</a></li>
+            </ul>
+            <hr class="text-secondary">
+            <span class="sidebar-heading">System</span>
+            <ul class="nav nav-pills flex-column">
+                <li><a href="#" class="nav-link"><i class="bi bi-people-fill"></i>사용자 관리</a></li>
+                <li><a href="#" class="nav-link"><i class="bi bi-gear-fill"></i>환경 설정</a></li>
+            </ul>
+        </div>
+
+        <!-- Content Area -->
+        <div class="content-area">
+            <div class="mb-4 pb-2 border-bottom d-flex align-items-center">
+                <a href="./agent-list.html" id="btnBack" class="text-decoration-none text-muted me-3 fs-5"
+                    title="Go Back"><i class="bi bi-arrow-left"></i></a>
+                <h4 class="mb-0">Agent 등록/수정</h4>
+            </div>
+
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="card shadow-sm border-0">
+                        <div class="card-body p-4">
+                            <form onsubmit="event.preventDefault(); location.href='./agent-list.html';">
+
+                                <h5 class="mb-3 text-secondary border-bottom pb-2">기본 정보 (Basic Info)</h5>
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="agentName" class="form-label fw-bold">Agent Name <span
+                                                class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="agentName"
+                                            placeholder="e.g. Pay-WAS-01" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="agentDesc" class="form-label">Description</label>
+                                        <input type="text" class="form-control" id="agentDesc" placeholder="서비스 용도 설명">
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="hostIp" class="form-label fw-bold">Host IP <span
+                                                class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="hostIp" placeholder="192.168.0.1"
+                                            required>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="serverType" class="form-label fw-bold">Server Type</label>
+                                        <select class="form-select" id="serverType">
+                                            <option value="" selected>Choose...</option>
+                                            <option value="DEV">DEV</option>
+                                            <option value="STG">STG</option>
+                                            <option value="PROD">PROD</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="servicePort" class="form-label fw-bold">Service Port</label>
+                                        <input type="number" class="form-control" id="servicePort" placeholder="8080">
+                                    </div>
+                                </div>
+
+                                <h5 class="mb-3 mt-4 text-secondary border-bottom pb-2">스크립트 설정 (Commands)</h5>
+                                <div class="mb-3">
+                                    <label for="startScript" class="form-label fw-bold">구동 스크립트 경로 (Start Script) <span
+                                            class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light"><i class="bi bi-play-circle"></i></span>
+                                        <input type="text" class="form-control font-monospace" id="startScript"
+                                            placeholder="/usr/local/server/bin/start.sh" required>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="stopScript" class="form-label fw-bold">중지 스크립트 경로 (Stop Script) <span
+                                            class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light"><i class="bi bi-stop-circle"></i></span>
+                                        <input type="text" class="form-control font-monospace" id="stopScript"
+                                            placeholder="/usr/local/server/bin/stop.sh" required>
+                                    </div>
+                                </div>
+
+                                <h5 class="mb-3 mt-4 text-secondary border-bottom pb-2">모니터링 설정 (Monitoring)</h5>
+                                <div class="mb-3">
+                                    <label for="logPath" class="form-label fw-bold">로그 파일 경로 (Log File Path) <span
+                                            class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light"><i class="bi bi-file-text"></i></span>
+                                        <input type="text" class="form-control font-monospace" id="logPath"
+                                            placeholder="/usr/local/server/logs/catalina.out" required>
+                                    </div>
+                                    <div class="form-text">모니터링할 메인 로그 파일의 절대 경로를 입력하세요.</div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="healthCheckUrl" class="form-label">Health Check Actuator URL</label>
+                                    <input type="text" class="form-control font-monospace" id="healthCheckUrl"
+                                        placeholder="http://localhost:8080/actuator/health">
+                                </div>
+
+                                <div class="d-flex justify-content-end gap-2 mt-5">
+                                    <a href="./agent-list.html" class="btn btn-secondary px-4">취소</a>
+                                    <button type="submit" class="btn btn-primary px-4 fw-bold">저장</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- common.js 로드 전에 현재 페이지 메뉴 활성화를 위해 스크립트 추가 가능하지만, common.js 로직으로 처리됨 -->
+    <script src="js/common.js"></script>
+    <script>
+        // URL 파라미터로 데이터 받아와서 폼 채우기 (데이터 연동 시뮬레이션)
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+
+            // Back Button Logic
+            const backBtn = document.getElementById('btnBack');
+            if (urlParams.get('from') === 'group') {
+                backBtn.href = "javascript:void(0)";
+                backBtn.onclick = () => {
+                    if (document.referrer) {
+                        window.location.href = document.referrer;
+                    } else {
+                        history.back();
+                    }
+                };
+            }
+
+            const name = urlParams.get('name');
+            const desc = urlParams.get('desc');
+            const ip = urlParams.get('ip');
+            const port = urlParams.get('port');
+            const serverType = urlParams.get('serverType');
+
+            if (name) document.getElementById('agentName').value = name;
+            if (desc) document.getElementById('agentDesc').value = desc;
+            if (ip) document.getElementById('hostIp').value = ip;
+            if (port) document.getElementById('servicePort').value = port;
+            if (serverType) document.getElementById('serverType').value = serverType;
+
+            // 수정 모드인 경우 타이틀 변경 (옵션)
+            if (name) {
+                document.querySelector('h4').textContent = 'Agent 수정';
+            }
+        });
+    </script>
+</body>
+
+</html>

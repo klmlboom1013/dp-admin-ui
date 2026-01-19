@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Management - Deploy System Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="css/layout.css" rel="stylesheet">
+</head>
+
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark border-bottom border-secondary sticky-top">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand fw-bold" href="./dashboard.html">
+                <i class="bi bi-rocket-takeoff-fill me-2"></i>Deploy System
+            </a>
+            <div class="d-flex align-items-center text-white">
+                <small class="me-3">Admin (김관리)</small>
+                <a href="./login.html" class="btn btn-sm btn-outline-light">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="d-flex">
+        <!-- Sidebar -->
+        <div class="sidebar d-flex flex-column flex-shrink-0 p-3">
+            <span class="sidebar-heading">Monitoring</span>
+            <ul class="nav nav-pills flex-column">
+                <li><a href="./dashboard.html" class="nav-link"><i class="bi bi-speedometer2"></i>대시보드 (Dashboard)</a>
+                </li>
+            </ul>
+            <hr class="text-secondary">
+            <span class="sidebar-heading">Management</span>
+            <ul class="nav nav-pills flex-column mb-auto">
+                <li><a href="./agent-list.html" class="nav-link"><i class="bi bi-hdd-rack"></i>Agent 관리</a></li>
+                <li><a href="./agent-group-list.html" class="nav-link"><i class="bi bi-collection"></i>Agent 그룹 관리</a>
+                </li>
+                <li><a href="./history.html" class="nav-link"><i class="bi bi-clock-history"></i>배포/구동 이력</a></li>
+            </ul>
+            <hr class="text-secondary">
+            <span class="sidebar-heading">System</span>
+            <ul class="nav nav-pills flex-column">
+                <li><a href="#" class="nav-link"><i class="bi bi-people-fill"></i>사용자 관리</a></li>
+                <li><a href="#" class="nav-link"><i class="bi bi-gear-fill"></i>환경 설정</a></li>
+            </ul>
+        </div>
+
+        <!-- Content Area -->
+        <div class="content-area">
+            <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+                <h4><i class="bi bi-hdd-rack me-2"></i>Agent 관리</h4>
+                <a href="./agent-form.html" class="btn btn-primary">
+                    <i class="bi bi-plus-lg"></i> 신규 Agent 등록
+                </a>
+            </div>
+
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-0">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th scope="col" class="ps-4" style="width: 50px;">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="selectAll" disabled>
+                                    </div>
+                                </th>
+                                <th scope="col">ID</th>
+                                <th scope="col">Name</th>
+                                <th scope="col">IP Address</th>
+                                <th scope="col">Status</th>
+                                <th scope="col">Last Update</th>
+                                <th scope="col" class="text-end pe-4">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr data-status="RUNNING">
+                                <td class="ps-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input row-checkbox" type="checkbox">
+                                    </div>
+                                </td>
+                                <td class="fw-bold text-muted">A-001</td>
+                                <td>
+                                    <div class="fw-bold">
+                                        Pay-WAS-01
+                                        <span class="badge bg-light text-secondary border ms-1">DEV</span>
+                                    </div>
+                                    <small class="text-muted">Payment Gateway Service</small>
+                                </td>
+                                <td>192.168.0.10:8080</td>
+                                <td><span
+                                        class="badge bg-success bg-opacity-10 text-success border border-success">RUNNING</span>
+                                </td>
+                                <td>2024-01-14 14:00</td>
+                                <td class="text-end pe-4">
+                                    <a href="./agent-details.html?id=A-001&name=Pay-WAS-01&ip=192.168.0.10&port=8080&serverType=DEV"
+                                        class="btn btn-sm btn-outline-info me-1" title="Console"><i
+                                            class="bi bi-terminal"></i></a>
+                                    <a href="./agent-form.html?id=A-001&name=Pay-WAS-01&desc=Payment Gateway Service&ip=192.168.0.10&port=8080"
+                                        class="btn btn-sm btn-outline-secondary me-1" title="Edit"><i
+                                            class="bi bi-pencil"></i></a>
+                                    <button class="btn btn-sm btn-outline-danger" title="Delete"
+                                        onclick="deleteAgent(this)"><i class="bi bi-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr data-status="STOPPED">
+                                <td class="ps-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input row-checkbox" type="checkbox">
+                                    </div>
+                                </td>
+                                <td class="fw-bold text-muted">A-002</td>
+                                <td>
+                                    <div class="fw-bold">
+                                        Pay-WAS-02
+                                        <span
+                                            class="badge bg-success bg-opacity-10 text-success border border-success ms-1">STG</span>
+                                    </div>
+                                    <small class="text-muted">Payment Gateway Service</small>
+                                </td>
+                                <td>192.168.0.11:8080</td>
+                                <td><span
+                                        class="badge bg-danger bg-opacity-10 text-danger border border-danger">STOPPED</span>
+                                </td>
+                                <td>2024-01-14 14:05</td>
+                                <td class="text-end pe-4">
+                                    <a href="./agent-details.html?id=A-002&name=Pay-WAS-02&ip=192.168.0.11&port=8080&serverType=STG"
+                                        class="btn btn-sm btn-outline-info me-1" title="Console"><i
+                                            class="bi bi-terminal"></i></a>
+                                    <a href="./agent-form.html?id=A-002&name=Pay-WAS-02&desc=Payment Gateway Service&ip=192.168.0.11&port=8080&serverType=STG"
+                                        class="btn btn-sm btn-outline-secondary me-1" title="Edit"><i
+                                            class="bi bi-pencil"></i></a>
+                                    <button class="btn btn-sm btn-outline-danger" title="Delete"
+                                        onclick="deleteAgent(this)"><i class="bi bi-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr data-status="DEPLOYING" data-server-type="PROD">
+                                <td class="ps-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input row-checkbox" type="checkbox">
+                                    </div>
+                                </td>
+                                <td class="fw-bold text-muted">A-003</td>
+                                <td>
+                                    <div class="fw-bold">
+                                        Order-API-01
+                                        <span
+                                            class="badge bg-primary bg-opacity-10 text-primary border border-primary ms-1">PROD</span>
+                                    </div>
+                                    <small class="text-muted">Order Processing API</small>
+                                </td>
+                                <td>10.20.30.42:8080</td>
+                                <td><span
+                                        class="badge bg-warning bg-opacity-10 text-warning border border-warning">DEPLOYING</span>
+                                </td>
+                                <td>2024-01-19 09:30</td>
+                                <td class="text-end pe-4">
+                                    <a href="./agent-details.html?id=A-003&name=Order-API-01&ip=10.20.30.42&port=8080&serverType=PROD"
+                                        class="btn btn-sm btn-outline-info me-1" title="Console"><i
+                                            class="bi bi-terminal"></i></a>
+                                    <a href="./agent-form.html?id=A-003&name=Order-API-01&desc=Order Processing API&ip=10.20.30.42&port=8080&serverType=PROD"
+                                        class="btn btn-sm btn-outline-secondary me-1" title="Edit"><i
+                                            class="bi bi-pencil"></i></a>
+                                    <button class="btn btn-sm btn-outline-danger" title="Delete"
+                                        onclick="deleteAgent(this)"><i class="bi bi-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr data-status="RUNNING" data-server-type="DEV">
+                                <td class="ps-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input row-checkbox" type="checkbox">
+                                    </div>
+                                </td>
+                                <td class="fw-bold text-muted">A-004</td>
+                                <td>
+                                    <div class="fw-bold">Pay-WAS-03</div>
+                                    <small class="text-muted">Payment Gateway Service</small>
+                                </td>
+                                <td>192.168.0.12:8080</td>
+                                <td><span
+                                        class="badge bg-success bg-opacity-10 text-success border border-success">RUNNING</span>
+                                </td>
+                                <td>2024-01-19 10:00</td>
+                                <td class="text-end pe-4">
+                                    <a href="./agent-details.html?id=A-004&name=Pay-WAS-03&ip=192.168.0.12&port=8080&serverType=DEV"
+                                        class="btn btn-sm btn-outline-info me-1" title="Console"><i
+                                            class="bi bi-terminal"></i></a>
+                                    <a href="./agent-form.html?id=A-004&name=Pay-WAS-03&desc=Payment Gateway Service&ip=192.168.0.12&port=8080"
+                                        class="btn btn-sm btn-outline-secondary me-1" title="Edit"><i
+                                            class="bi bi-pencil"></i></a>
+                                    <button class="btn btn-sm btn-outline-danger" title="Delete"
+                                        onclick="deleteAgent(this)"><i class="bi bi-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr data-status="STOPPED" data-server-type="PROD">
+                                <td class="ps-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input row-checkbox" type="checkbox">
+                                    </div>
+                                </td>
+                                <td class="fw-bold text-muted">A-005</td>
+                                <td>
+                                    <div class="fw-bold">
+                                        Pay-WAS-04
+                                        <span
+                                            class="badge bg-primary bg-opacity-10 text-primary border border-primary ms-1">PROD</span>
+                                    </div>
+                                    <small class="text-muted">Payment Gateway Service</small>
+                                </td>
+                                <td>192.168.0.13:8080</td>
+                                <td><span
+                                        class="badge bg-danger bg-opacity-10 text-danger border border-danger">STOPPED</span>
+                                </td>
+                                <td>2024-01-19 10:05</td>
+                                <td class="text-end pe-4">
+                                    <a href="./agent-details.html?id=A-005&name=Pay-WAS-04&ip=192.168.0.13&port=8080&serverType=PROD"
+                                        class="btn btn-sm btn-outline-info me-1" title="Console"><i
+                                            class="bi bi-terminal"></i></a>
+                                    <a href="./agent-form.html?id=A-005&name=Pay-WAS-04&desc=Payment Gateway Service&ip=192.168.0.13&port=8080&serverType=PROD"
+                                        class="btn btn-sm btn-outline-secondary me-1" title="Edit"><i
+                                            class="bi bi-pencil"></i></a>
+                                    <button class="btn btn-sm btn-outline-danger" title="Delete"
+                                        onclick="deleteAgent(this)"><i class="bi bi-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr data-status="DEPLOYING">
+                                <td class="ps-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input row-checkbox" type="checkbox">
+                                    </div>
+                                </td>
+                                <td class="fw-bold text-muted">A-006</td>
+                                <td>
+                                    <div class="fw-bold">
+                                        Order-API-02
+                                        <span
+                                            class="badge bg-primary bg-opacity-10 text-primary border border-primary ms-1">PROD</span>
+                                    </div>
+                                    <small class="text-muted">Order Processing API</small>
+                                </td>
+                                <td>10.20.30.43:8080</td>
+                                <td><span
+                                        class="badge bg-warning bg-opacity-10 text-warning border border-warning">DEPLOYING</span>
+                                </td>
+                                <td>2024-01-19 10:30</td>
+                                <td class="text-end pe-4">
+                                    <a href="./agent-details.html?id=A-006&name=Order-API-02&ip=10.20.30.43&port=8080&serverType=PROD"
+                                        class="btn btn-sm btn-outline-info me-1" title="Console"><i
+                                            class="bi bi-terminal"></i></a>
+                                    <a href="./agent-form.html?id=A-006&name=Order-API-02&desc=Order Processing API&ip=10.20.30.43&port=8080&serverType=PROD"
+                                        class="btn btn-sm btn-outline-secondary me-1" title="Edit"><i
+                                            class="bi bi-pencil"></i></a>
+                                    <button class="btn btn-sm btn-outline-danger" title="Delete"
+                                        onclick="deleteAgent(this)"><i class="bi bi-trash"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card-footer bg-white d-flex justify-content-end py-3">
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination pagination-sm mb-0">
+                            <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
+                            <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                            <li class="page-item"><a class="page-link" href="#">2</a></li>
+                            <li class="page-item"><a class="page-link" href="#">3</a></li>
+                            <li class="page-item"><a class="page-link" href="#">Next</a></li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bulk Action Toolbar -->
+    <div id="bulkToolbar" class="floating-toolbar">
+        <div class="d-flex align-items-center">
+            <span class="badge bg-primary me-2 rounded-pill" id="selectedCount">0</span>
+            <span class="fw-bold">Agents Selected</span>
+        </div>
+
+        <div class="d-flex align-items-center gap-3">
+            <!-- Execution Option -->
+            <div class="btn-group" role="group" aria-label="Execution Toggle">
+                <input type="radio" class="btn-check" name="execMode" id="modeSequ" value="SEQUENTIAL" checked>
+                <label class="btn btn-outline-light btn-sm" for="modeSequ" title="Execute one by one">
+                    <i class="bi bi-collection-play"></i> 순차 (Semi)
+                </label>
+
+                <input type="radio" class="btn-check" name="execMode" id="modePara" value="PARALLEL">
+                <label class="btn btn-outline-light btn-sm" for="modePara" title="Execute all at once">
+                    <i class="bi bi-arrows-move"></i> 동시 (Para)
+                </label>
+            </div>
+
+            <div class="vr bg-secondary opacity-50"></div>
+
+            <!-- Action Buttons -->
+            <div class="action-group">
+                <button class="btn btn-success btn-sm px-3 fw-bold" onclick="runBulkAction('START')">
+                    <i class="bi bi-play-fill"></i> Start
+                </button>
+                <button class="btn btn-danger btn-sm px-3 fw-bold" onclick="runBulkAction('STOP')">
+                    <i class="bi bi-stop-fill"></i> Stop
+                </button>
+                <button class="btn btn-warning btn-sm px-3 fw-bold text-dark" onclick="runBulkAction('RESTART')">
+                    <i class="bi bi-arrow-clockwise"></i> Restart
+                </button>
+            </div>
+
+            <button class="btn btn-link text-white-50 p-0 ms-2" onclick="clearSelection()">
+                <i class="bi bi-x-circle fs-5"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1060">
+        <!-- Toasts will be dynamically appended here -->
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/common.js"></script>
+
+    <script>
+        // --- Multi-select Logic ---
+        const tableRows = document.querySelectorAll('table tbody tr');
+        let selectedRows = new Set();
+        const toolbar = document.getElementById('bulkToolbar');
+        const countBadge = document.getElementById('selectedCount');
+
+        tableRows.forEach(row => {
+            row.style.cursor = 'pointer';
+
+            // Row Click Event
+            row.addEventListener('click', function (e) {
+                // Ignore clicks on buttons/links
+                if (e.target.closest('button') || e.target.closest('a')) return;
+
+                const checkbox = this.querySelector('.row-checkbox');
+
+                if (e.ctrlKey || e.metaKey || e.target.classList.contains('row-checkbox')) {
+                    // Check same status constraint
+                    if (!canSelect(this)) {
+                        // If it's a click on checkbox, revert its state because the UI would have toggled it
+                        if (e.target === checkbox) {
+                            checkbox.checked = !checkbox.checked;
+                        }
+                        // Alert user
+                        // Using our generic commonAlertModal if available or simple alert/toast
+                        // Since common.js is loaded, showToast is available.
+                        showToast('동일한 상태(Status)의 에이전트만 일괄 선택할 수 있습니다.', 'warning');
+                        return;
+                    }
+
+                    // Toggle selection logic
+                    if (e.target !== checkbox) {
+                        checkbox.checked = !checkbox.checked;
+                    }
+                    toggleSelection(this, checkbox.checked);
+                } else {
+                    // Normal click logic (optional: clear others or navigate)
+                    // For now, let's keep it simple: Normal click doesn't trigger multi-select unless Ctrl is held
+                    // But to respect user feedback "can't see selection", we ensured visuals are strong.
+                    // If user clicks checkbox directly, we toggle.
+
+                    // IF user wants simply clicking row to select:
+                    // checkbox.checked = !checkbox.checked;
+                    // toggleSelection(this, checkbox.checked);
+                }
+            });
+        });
+
+        function toggleSelection(row, isSelected) {
+            const checkbox = row.querySelector('.row-checkbox');
+            checkbox.checked = isSelected;
+
+            if (isSelected) {
+                row.classList.add('selected');
+                selectedRows.add(row);
+            } else {
+                row.classList.remove('selected');
+                selectedRows.delete(row);
+            }
+            updateToolbar();
+        }
+
+        function canSelect(row) {
+            const targetStatus = row.dataset.status;
+
+            // If nothing is selected yet, it's allowed
+            if (selectedRows.size === 0) return true;
+
+            // If this row is already selected, we are deselecting, which is allowed
+            // However, we need to check if we are toggling OFF.
+            const checkbox = row.querySelector('.row-checkbox');
+            // Logic is a bit tricky: 
+            // The checkbox state *before* this check depends on who clicked it.
+            // But fundamentally, if I am *adding* to selection, I need to check.
+
+            // Let's rely on the Set.
+            if (selectedRows.has(row)) return true; // Deselecting is always allowed
+
+            // If selecting a new one, check against the first item in the Set
+            const firstRow = selectedRows.values().next().value;
+            const currentStatus = firstRow.dataset.status;
+
+            return targetStatus === currentStatus;
+        }
+
+        function clearSelection() {
+            selectedRows.forEach(row => {
+                row.classList.remove('selected');
+                row.querySelector('.row-checkbox').checked = false;
+            });
+            selectedRows.clear();
+            updateToolbar();
+        }
+
+        function updateToolbar() {
+            countBadge.textContent = selectedRows.size;
+            if (selectedRows.size > 0) {
+                toolbar.classList.add('show');
+            } else {
+                toolbar.classList.remove('show');
+            }
+        }
+
+        // --- Bulk Action Logic ---
+        function runBulkAction(action) {
+            const mode = document.querySelector('input[name="execMode"]:checked').value; // SEQUENTIAL or PARALLEL
+
+            // Gather selected agents
+            const selectedAgents = Array.from(selectedRows).map(row => {
+                return {
+                    id: row.querySelector('td:nth-child(2)').innerText.trim(),
+                    name: row.querySelector('td:nth-child(3) .fw-bold').childNodes[0].textContent.trim(), // Text node before badge
+                    serverType: row.dataset.serverType || (row.querySelector('.badge.bg-primary') ? 'PROD' : 'DEV') // Fallback check
+                };
+            });
+
+            if (selectedAgents.length === 0) return;
+
+            const agentNames = selectedAgents.map(a => a.name);
+            const prodAgents = selectedAgents.filter(a => a.serverType === 'PROD').map(a => a.name);
+
+            // Function to execute action after confirmation
+            const executeAction = () => {
+                // Show Feedback
+                showGlobalToast(`${action} command initiated for ${agentNames.length} agents...`);
+                setListProcessingState(true);
+
+                let completedCount = 0;
+                const total = agentNames.length;
+                const checkCompletion = () => {
+                    completedCount++;
+                    if (completedCount === total) {
+                        setTimeout(() => {
+                            showGlobalToast('All commands completed.');
+                            setListProcessingState(false);
+                        }, 500);
+                    }
+                };
+
+                if (mode === 'PARALLEL') {
+                    // 동시 실행 시뮬레이션
+                    agentNames.forEach(name => {
+                        console.log(`[PARALLEL] Sending ${action} to ${name}`);
+                        setTimeout(() => {
+                            showGlobalToast(`[${name}] ${action} Completed!`);
+                            checkCompletion();
+                        }, Math.random() * 2000 + 500);
+                    });
+                } else {
+                    // 순차 실행 시뮬레이션
+                    let delay = 0;
+                    agentNames.forEach((name, index) => {
+                        setTimeout(() => {
+                            console.log(`[SEQUENTIAL] Sending ${action} to ${name}`);
+                            showGlobalToast(`[${name}] ${action} Completed! (${index + 1}/${agentNames.length})`);
+                            checkCompletion();
+                        }, delay);
+                        delay += 1500; // 1.5초 간격
+                    });
+                }
+            };
+
+            // Check for PROD agents
+            if (prodAgents.length > 0) {
+                showProdSafetyConfirm(action, prodAgents, executeAction);
+            } else {
+                const confirmMsg = `[${mode}] 모드로 ${agentNames.length}개의 에이전트에 [${action}] 명령을 수행하시겠습니까?\n\n대상: ${agentNames.join(', ')}`;
+                showConfirm(confirmMsg, executeAction);
+            }
+        }
+
+        function setListProcessingState(isProcessing) {
+            // Disable all Edit buttons in the table
+            const editButtons = document.querySelectorAll('table .btn-outline-secondary');
+
+            editButtons.forEach(btn => {
+                btn.disabled = isProcessing;
+                if (isProcessing) {
+                    btn.classList.add('disabled');
+                    btn.style.pointerEvents = 'none';
+                    btn.style.opacity = '0.5';
+                } else {
+                    btn.classList.remove('disabled');
+                    btn.style.pointerEvents = 'auto';
+                    btn.style.opacity = '1';
+                }
+            });
+        }
+
+        function showGlobalToast(msg, type = 'success') {
+            const container = document.querySelector('.toast-container');
+            if (!container) return;
+
+            // Create new toast element
+            const toastEl = document.createElement('div');
+            toastEl.className = 'toast align-items-center border-0 mb-2';
+            toastEl.role = 'alert';
+            toastEl.ariaLive = 'assertive';
+            toastEl.ariaAtomic = 'true';
+
+            // Set colors
+            if (type === 'warning' || type === 'danger') {
+                toastEl.classList.add('text-bg-danger');
+            } else {
+                toastEl.classList.add('text-bg-dark');
+            }
+
+            toastEl.innerHTML = `
+                <div class="d-flex">
+                    <div class="toast-body">
+                        ${msg}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            `;
+
+            container.appendChild(toastEl);
+            const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
+            toast.show();
+
+            // Remove from DOM after hidden
+            toastEl.addEventListener('hidden.bs.toast', () => {
+                toastEl.remove();
+            });
+        }
+        // --- Delete Agent Logic ---
+        function deleteAgent(btn) {
+            showConfirm('정말 삭제하시겠습니까?', () => {
+                const row = btn.closest('tr');
+                row.remove();
+                showGlobalToast('에이전트가 삭제되었습니다.', 'warning');
+                // Update header count or other logic if needed
+            });
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Console - Deploy System Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="css/layout.css" rel="stylesheet">
+</head>
+
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark border-bottom border-secondary sticky-top">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand fw-bold" href="./dashboard.html">
+                <i class="bi bi-rocket-takeoff-fill me-2"></i>Deploy System
+            </a>
+            <div class="d-flex align-items-center text-white">
+                <small class="me-3">Admin (김관리)</small>
+                <a href="./login.html" class="btn btn-sm btn-outline-light">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="d-flex">
+        <!-- Sidebar -->
+        <div class="sidebar d-flex flex-column flex-shrink-0 p-3">
+            <span class="sidebar-heading">Monitoring</span>
+            <ul class="nav nav-pills flex-column">
+                <!-- agent-list.html 메뉴 활성화 -->
+                <li><a href="./dashboard.html" class="nav-link"><i class="bi bi-speedometer2"></i>대시보드 (Dashboard)</a>
+                </li>
+            </ul>
+            <hr class="text-secondary">
+            <span class="sidebar-heading">Management</span>
+            <ul class="nav nav-pills flex-column mb-auto">
+                <li><a href="./agent-list.html" class="nav-link"><i class="bi bi-hdd-rack"></i>Agent 관리</a></li>
+                <li><a href="./agent-group-list.html" class="nav-link"><i class="bi bi-collection"></i>Agent 그룹 관리</a>
+                </li>
+                <li><a href="./history.html" class="nav-link"><i class="bi bi-clock-history"></i>배포/구동 이력</a></li>
+            </ul>
+            <hr class="text-secondary">
+            <span class="sidebar-heading">System</span>
+            <ul class="nav nav-pills flex-column">
+                <li><a href="#" class="nav-link"><i class="bi bi-people-fill"></i>사용자 관리</a></li>
+                <li><a href="#" class="nav-link"><i class="bi bi-gear-fill"></i>환경 설정</a></li>
+            </ul>
+        </div>
+
+        <!-- Content Area -->
+        <div class="content-area">
+            <div class="mb-4 pb-2 border-bottom d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center">
+                    <a href="./agent-list.html" id="btnBack" class="text-decoration-none text-muted me-3 fs-5"
+                        title="Go Back"><i class="bi bi-arrow-left"></i></a>
+                    <div>
+                        <h4 class="mb-0 fw-bold" id="agentName">Pay-WAS-01</h4>
+                        <span class="text-muted small" id="agentIp">192.168.0.10:8080</span>
+                    </div>
+                    <span class="badge bg-success bg-opacity-10 text-success border border-success ms-3">RUNNING</span>
+                </div>
+
+                <div>
+                    <a href="./agent-form.html" id="btnEdit" class="btn btn-outline-secondary btn-sm"><i
+                            class="bi bi-pencil"></i> 설정
+                        수정</a>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- Control Panel -->
+                <div class="col-md-12 mb-4">
+                    <div class="card shadow-sm border-0">
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-md-6 border-end">
+                                    <h6 class="text-muted text-uppercase mb-3 fw-bold small">Service Control</h6>
+                                    <div class="d-flex gap-2">
+                                        <button onclick="sendCommand('START')"
+                                            class="btn btn-success btn-lg px-4 shadow-sm flex-fill">
+                                            <i class="bi bi-play-fill"></i> 구동 (Start)
+                                        </button>
+                                        <button onclick="confirmStop()"
+                                            class="btn btn-danger btn-lg px-4 shadow-sm flex-fill">
+                                            <i class="bi bi-stop-fill"></i> 중지 (Stop)
+                                        </button>
+                                        <button onclick="confirmRestart()"
+                                            class="btn btn-warning btn-lg px-4 shadow-sm flex-fill">
+                                            <i class="bi bi-arrow-clockwise"></i> 재기동
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 ps-4">
+                                    <h6 class="text-muted text-uppercase mb-3 fw-bold small">Health Check & Status</h6>
+                                    <div
+                                        class="d-flex justify-content-between align-items-center p-3 bg-light rounded border">
+                                        <div>
+                                            <span class="d-block fw-bold text-dark">Actuator Health</span>
+                                            <small class="text-muted">http://192.168.0.10:8080/actuator/health</small>
+                                        </div>
+                                        <span class="badge bg-success fs-6">UP (200 OK)</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Log Console -->
+                <div class="col-md-12">
+                    <div class="card shadow-sm border-0">
+                        <div
+                            class="card-header bg-dark text-white d-flex justify-content-between align-items-center py-2">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-terminal-fill me-2"></i>
+                                <span class="fw-bold">Real-time Log Viewer</span>
+                                <span class="text-white-50 ms-2 small">(/usr/local/tomcat/logs/catalina.out)</span>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <button class="btn btn-sm btn-outline-secondary text-white me-2" onclick="clearLog()">
+                                    <i class="bi bi-eraser"></i> Clear
+                                </button>
+                                <div class="form-check form-switch mb-0">
+                                    <input class="form-check-input" type="checkbox" id="autoScroll" checked>
+                                    <label class="form-check-label text-white-50 small" for="autoScroll">Auto
+                                        Scroll</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body p-0">
+                            <div id="log-console" class="console-window">
+                                <div class="console-line text-muted">// Connected to Agent Log Stream . . .</div>
+                                <div class="console-line text-muted">// Waiting for logs . . .</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/common.js"></script>
+    <script>
+        // --- Navigation Logic ---
+        const urlParams = new URLSearchParams(window.location.search);
+        const backBtn = document.getElementById('btnBack');
+        if (urlParams.get('from') === 'group') {
+            backBtn.href = "javascript:void(0)";
+            backBtn.onclick = () => {
+                if (document.referrer) {
+                    window.location.href = document.referrer; // Use referrer to keep params if possible, or history.back()
+                } else {
+                    history.back();
+                }
+            };
+        }
+
+        // Parse URL Params
+        const agentId = urlParams.get('id');
+        const agentName = urlParams.get('name');
+        const agentIp = urlParams.get('ip');
+        const serverType = urlParams.get('serverType');
+
+        if (agentName) {
+            document.getElementById('agentName').innerText = agentName;
+            document.title = `${agentName} - Agent Console`;
+
+            // Add Badge
+            if (serverType) {
+                let badgeClass = 'bg-secondary';
+                if (serverType === 'DEV') badgeClass = 'bg-light text-secondary border';
+                else if (serverType === 'STG') badgeClass = 'bg-success bg-opacity-10 text-success border border-success';
+                else if (serverType === 'PROD') badgeClass = 'bg-primary bg-opacity-10 text-primary border border-primary';
+
+                const badgeHtml = `<span class="badge ${badgeClass} ms-2 fs-6 align-middle" style="font-size: 0.6em !important;">${serverType}</span>`;
+                document.getElementById('agentName').insertAdjacentHTML('beforeend', badgeHtml);
+            }
+        }
+        if (agentIp) {
+            document.getElementById('agentIp').innerText = agentIp + (urlParams.get('port') ? ':' + urlParams.get('port') : '');
+        }
+
+        // Update Edit Link
+        if (agentId) {
+            const btnEdit = document.getElementById('btnEdit');
+            const port = urlParams.get('port') || '8080';
+            // Construct query string
+            const newQuery = new URLSearchParams();
+            newQuery.set('id', agentId);
+            if (agentName) newQuery.set('name', agentName);
+            if (agentIp) newQuery.set('ip', agentIp);
+            newQuery.set('port', port);
+            if (serverType) newQuery.set('serverType', serverType);
+
+            btnEdit.href = `./agent-form.html?${newQuery.toString()}`;
+        }
+
+        // 로그 시뮬레이션
+        let logInterval;
+        const consoleDiv = document.getElementById('log-console');
+
+        function appendLog(msg, type = 'INFO') {
+            const line = document.createElement('div');
+            line.className = 'console-line';
+
+            const now = new Date().toISOString().replace('T', ' ').substring(0, 23);
+            let colorClass = 'log-info';
+            if (type === 'ERROR') colorClass = 'log-error';
+            if (type === 'WARN') colorClass = 'log-warn';
+
+            line.innerHTML = `<span class="text-muted pe-2">[${now}]</span> <span class="${colorClass} fw-bold">[${type}]</span> ${msg}`;
+            consoleDiv.appendChild(line);
+
+            if (document.getElementById('autoScroll').checked) {
+                consoleDiv.scrollTop = consoleDiv.scrollHeight;
+            }
+        }
+
+        function sendCommand(cmd) {
+            if (cmd === 'START') {
+                appendLog('Command initiated: START_SERVICE', 'INFO');
+                setTimeout(() => appendLog('Executing script: /usr/local/bin/start.sh', 'INFO'), 500);
+                setTimeout(() => appendLog('Service PID: 12345 started.', 'INFO'), 1500);
+                setTimeout(() => appendLog('Application context initialized.', 'INFO'), 2500);
+            } else if (cmd === 'STOP') {
+                appendLog('Command initiated: STOP_SERVICE', 'WARN');
+                setTimeout(() => appendLog('Sending SIGTERM to process 12345...', 'WARN'), 500);
+                setTimeout(() => appendLog('Service stopped gracefully.', 'INFO'), 2000);
+            } else if (cmd === 'RESTART') {
+                sendCommand('STOP');
+                setTimeout(() => sendCommand('START'), 3000);
+            }
+        }
+
+        function confirmStop() {
+            showConfirm('서비스를 중지하시겠습니까?\n운영 중인 서비스에 영향이 갈 수 있습니다.', () => {
+                sendCommand('STOP');
+            });
+        }
+
+        function confirmRestart() {
+            showConfirm('서비스를 재기동하시겠습니까?', () => {
+                sendCommand('RESTART');
+            });
+        }
+
+        function clearLog() {
+            consoleDiv.innerHTML = '<div class="console-line text-muted">// Log cleared</div>';
+        }
+
+        // 초기 더미 로그
+        setTimeout(() => appendLog('Initializing HikariCP connection pool...', 'INFO'), 1000);
+        setTimeout(() => appendLog('HikariPool-1 - Added connection conn0: (socket created)', 'DEBUG'), 1200);
+        setTimeout(() => appendLog('HikariPool-1 - Start completed.', 'INFO'), 1500);
+
+        // 주기적 로그 생성 (시뮬레이션)
+        setInterval(() => {
+            const random = Math.random();
+            if (random > 0.9) appendLog('Health Check request processing...', 'DEBUG');
+            if (random < 0.05) appendLog('Connection timeout occurred on external API', 'WARN');
+        }, 3000);
+
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,195 @@
+/* 공통 레이아웃 스타일 */
+body {
+    background-color: #f8f9fa;
+    min-height: 100vh;
+}
+
+/* 네비게이션 바 */
+.navbar-brand {
+    font-weight: bold;
+    font-size: 1.25rem;
+}
+
+/* 사이드바 */
+.sidebar {
+    min-width: 250px;
+    max-width: 250px;
+    min-height: calc(100vh - 56px);
+    /* Navbar 높이(약 56px) 제외 */
+    background-color: #212529;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar .nav-link {
+    color: rgba(255, 255, 255, .75);
+    padding: 12px 20px;
+    border-radius: 0;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+}
+
+.sidebar .nav-link:hover {
+    color: #fff;
+    background-color: rgba(255, 255, 255, .1);
+}
+
+.sidebar .nav-link.active {
+    color: #fff;
+    background-color: #0d6efd;
+}
+
+.sidebar .nav-link i {
+    margin-right: 10px;
+    font-size: 1.1rem;
+    width: 20px;
+    text-align: center;
+}
+
+.sidebar hr {
+    margin: 1rem 0;
+    opacity: 0.25;
+}
+
+.sidebar .sidebar-heading {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    color: #6c757d;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    padding: 0 20px;
+    margin-top: 1rem;
+}
+
+/* 메인 컨텐츠 영역 */
+.content-area {
+    flex-grow: 1;
+    padding: 30px;
+    height: calc(100vh - 56px);
+    overflow-y: auto;
+}
+
+/* 카드 호버 효과 */
+.card-hover {
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.card-hover:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* 상태 점 (Status Dot) */
+.status-dot {
+    height: 10px;
+    width: 10px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 5px;
+}
+
+.bg-running {
+    background-color: #28a745;
+    box-shadow: 0 0 5px #28a745;
+}
+
+.bg-stopped {
+    background-color: #dc3545;
+}
+
+.bg-deploying {
+    background-color: #ffc107;
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+    50% {
+        opacity: 0.5;
+    }
+}
+
+/* 터미널 로그 창 스타일 */
+.console-window {
+    background-color: #1e1e1e;
+    color: #d4d4d4;
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    height: 600px;
+    overflow-y: scroll;
+    padding: 15px;
+    border-radius: 5px;
+    border: 1px solid #333;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.console-line {
+    margin: 0;
+    white-space: pre-wrap;
+}
+
+.log-info {
+    color: #569cd6;
+}
+
+/* Blue for Info */
+.log-error {
+    color: #f44747;
+}
+
+/* Red for Error */
+.log-warn {
+    color: #cca700;
+}
+
+/* Yellow for Warn */
+
+/* 선택된 행 스타일 */
+/* 선택된 행 스타일 (시각적 피드백 강화) */
+.table-hover tbody tr.selected {
+    background-color: #dbeafe !important;
+    /* Tailwind blue-100 approximation */
+    border-left: 5px solid #0d6efd !important;
+}
+
+.table-hover tbody tr.selected>* {
+    background-color: #dbeafe !important;
+    /* Ensure cells inherit background */
+    font-weight: bold;
+}
+
+.table-hover tbody tr.selected:hover>* {
+    background-color: #bfdbfe !important;
+    /* Tailwind blue-200 approximation */
+}
+
+/* 하단 플로팅 툴바 */
+.floating-toolbar {
+    position: fixed;
+    bottom: -100px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #343a40;
+    color: white;
+    padding: 15px 30px;
+    border-radius: 50px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    transition: bottom 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 1050;
+    width: auto;
+    min-width: 600px;
+    justify-content: space-between;
+}
+
+.floating-toolbar.show {
+    bottom: 30px;
+}
+
+.floating-toolbar .action-group {
+    display: flex;
+    gap: 10px;
+}

@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Group Details - Deploy System Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="css/layout.css" rel="stylesheet">
+    <style>
+        /* Edit Mode Styles */
+        .btn-remove-agent {
+            display: none;
+        }
+
+        .edit-mode .btn-remove-agent {
+            display: inline-block;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark border-bottom border-secondary sticky-top">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand fw-bold" href="./dashboard.html">
+                <i class="bi bi-rocket-takeoff-fill me-2"></i>Deploy System
+            </a>
+            <div class="d-flex align-items-center text-white">
+                <small class="me-3">Admin (김관리)</small>
+                <a href="./login.html" class="btn btn-sm btn-outline-light">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="d-flex">
+        <!-- Sidebar -->
+        <div class="sidebar d-flex flex-column flex-shrink-0 p-3">
+            <span class="sidebar-heading">Monitoring</span>
+            <ul class="nav nav-pills flex-column">
+                <li><a href="./dashboard.html" class="nav-link"><i class="bi bi-speedometer2"></i>대시보드 (Dashboard)</a>
+                </li>
+            </ul>
+            <hr class="text-secondary">
+            <span class="sidebar-heading">Management</span>
+            <ul class="nav nav-pills flex-column mb-auto">
+                <li><a href="./agent-list.html" class="nav-link"><i class="bi bi-hdd-rack"></i>Agent 관리</a></li>
+                <li><a href="./agent-group-list.html" class="nav-link active"><i class="bi bi-collection"></i>Agent 그룹
+                        관리</a></li>
+                <li><a href="./history.html" class="nav-link"><i class="bi bi-clock-history"></i>배포/구동 이력</a></li>
+            </ul>
+            <hr class="text-secondary">
+            <span class="sidebar-heading">System</span>
+            <ul class="nav nav-pills flex-column">
+                <li><a href="#" class="nav-link"><i class="bi bi-people-fill"></i>사용자 관리</a></li>
+                <li><a href="#" class="nav-link"><i class="bi bi-gear-fill"></i>환경 설정</a></li>
+            </ul>
+        </div>
+
+        <!-- Content Area -->
+        <div class="content-area">
+            <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+                <h4><i class="bi bi-collection me-2"></i>Agent 그룹 상세</h4>
+                <a href="./agent-group-list.html" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> 목록으로
+                </a>
+            </div>
+
+            <!-- Group Info Section -->
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-light fw-bold d-flex justify-content-between align-items-center">
+                    <span><i class="bi bi-info-circle me-1"></i> 그룹 정보</span>
+                    <div>
+                        <button class="btn btn-sm btn-outline-primary" id="btnEdit"
+                            onclick="toggleEditMode(true)">Edit</button>
+                        <button class="btn btn-sm btn-success d-none" id="btnSave"
+                            onclick="saveGroupInfo()">Save</button>
+                        <button class="btn btn-sm btn-secondary d-none" id="btnCancel"
+                            onclick="cancelEdit()">Cancel</button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label for="groupName" class="form-label fw-bold">Group Name</label>
+                            <input type="text" class="form-control" id="groupName" placeholder="Enter Group Name"
+                                disabled>
+                        </div>
+                        <div class="col-md-8">
+                            <label for="groupDesc" class="form-label fw-bold">Description</label>
+                            <input type="text" class="form-control" id="groupDesc" placeholder="Enter Description"
+                                disabled>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Agent List in Group Section -->
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h5 class="fw-bold"><i class="bi bi-list-check me-2"></i>Attached Agents</h5>
+                <button class="btn btn-sm btn-outline-primary d-none" id="btnAddAgent" onclick="openAddAgentModal()">
+                    <i class="bi bi-plus-lg"></i> Agent 추가
+                </button>
+            </div>
+
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-0">
+                    <table class="table table-hover align-middle mb-0" id="groupAgentTable">
+                        <thead class="table-light">
+                            <tr>
+                                <th scope="col" class="ps-4" style="width: 50px;">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="selectAll">
+                                    </div>
+                                </th>
+                                <th scope="col">ID</th>
+                                <th scope="col">Name</th>
+                                <th scope="col">Status</th>
+                                <th scope="col" class="text-end pe-4">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Mock Data for Group -->
+                            <!-- Dynamically populated or static mock for now -->
+                        </tbody>
+                    </table>
+                    <!-- Empty state message if needed -->
+                    <div id="emptyState" class="text-center py-5 text-muted d-none">
+                        그룹에 소속된 Agent가 없습니다.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bulk Action Toolbar (Scoped to this Group) -->
+            <div id="bulkToolbar" class="floating-toolbar">
+                <div class="d-flex align-items-center">
+                    <span class="badge bg-primary me-2 rounded-pill" id="selectedCount">0</span>
+                    <span class="fw-bold">Agents Selected</span>
+                </div>
+
+                <div class="d-flex align-items-center gap-3">
+                    <!-- Execution Option -->
+                    <div class="btn-group" role="group" aria-label="Execution Toggle">
+                        <input type="radio" class="btn-check" name="execMode" id="modeSequ" value="SEQUENTIAL" checked>
+                        <label class="btn btn-outline-light btn-sm" for="modeSequ" title="Execute one by one">
+                            <i class="bi bi-collection-play"></i> 순차 (Semi)
+                        </label>
+
+                        <input type="radio" class="btn-check" name="execMode" id="modePara" value="PARALLEL">
+                        <label class="btn btn-outline-light btn-sm" for="modePara" title="Execute all at once">
+                            <i class="bi bi-arrows-move"></i> 동시 (Para)
+                        </label>
+                    </div>
+
+                    <div class="vr bg-secondary opacity-50"></div>
+
+                    <div class="action-group">
+                        <button class="btn btn-success btn-sm px-3 fw-bold" onclick="runGroupBulkAction('START')">
+                            <i class="bi bi-play-fill"></i> Start
+                        </button>
+                        <button class="btn btn-danger btn-sm px-3 fw-bold" onclick="runGroupBulkAction('STOP')">
+                            <i class="bi bi-stop-fill"></i> Stop
+                        </button>
+                        <button class="btn btn-warning btn-sm px-3 fw-bold text-dark"
+                            onclick="runGroupBulkAction('RESTART')">
+                            <i class="bi bi-arrow-clockwise"></i> Restart
+                        </button>
+                    </div>
+
+                    <button class="btn btn-link text-white-50 p-0 ms-2" onclick="clearSelection()">
+                        <i class="bi bi-x-circle fs-5"></i>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Add Agent Modal -->
+    <div class="modal fade" id="addAgentModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Agent to Group</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-muted mb-3">그룹에 추가할 Agent를 선택하세요.</p>
+                    <div class="list-group" id="availableAgentList">
+                        <!-- Mock List of Available Agents -->
+                        <label class="list-group-item d-flex gap-2">
+                            <input class="form-check-input flex-shrink-0" type="checkbox" value="A-007">
+                            <span>
+                                <strong>Pay-WAS-05</strong>
+                                <small class="text-muted d-block">Available Agent</small>
+                            </span>
+                        </label>
+                        <label class="list-group-item d-flex gap-2">
+                            <input class="form-check-input flex-shrink-0" type="checkbox" value="A-008">
+                            <span>
+                                <strong>Order-API-03</strong>
+                                <small class="text-muted d-block">Available Agent</small>
+                            </span>
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="addSelectedAgents()">Add Selected</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1060">
+        <!-- Toasts will be dynamically appended here -->
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/common.js"></script>
+
+    <script>
+        // --- Initialization ---
+        const urlParams = new URLSearchParams(window.location.search);
+        const groupNameInput = document.getElementById('groupName');
+        const groupDescInput = document.getElementById('groupDesc');
+
+        // --- Agent Table & Selection Logic ---
+        const tableBody = document.querySelector('#groupAgentTable tbody');
+        let selectedRows = new Set();
+        const toolbar = document.getElementById('bulkToolbar');
+        const countBadge = document.getElementById('selectedCount');
+        const selectAllCheckbox = document.getElementById('selectAll');
+
+        // State
+        let isEditMode = false;
+        let isNewGroup = false;
+
+        // Mock Initial Data
+        if (urlParams.get('name')) {
+            groupNameInput.value = urlParams.get('name');
+            groupDescInput.value = urlParams.get('desc') || '';
+
+            // Generate some mock agents for this group
+            renderAgentTable([
+                { id: 'A-003', name: 'Order-API-01', status: 'DEPLOYING', serverType: 'DEV' },
+                { id: 'A-006', name: 'Order-API-02', status: 'RUNNING', serverType: 'PROD' }
+            ]);
+        } else {
+            // New Group -> Default to Edit Mode
+            isNewGroup = true;
+            groupNameInput.value = '';
+            document.getElementById('emptyState').classList.remove('d-none');
+            // Ensure DOM is fully ready before toggling? Script is at end of body so it should be fine.
+            setTimeout(() => toggleEditMode(true), 0);
+        }
+
+
+        // --- View/Edit Mode Logic ---
+        function toggleEditMode(forceEdit = null) {
+            isEditMode = forceEdit !== null ? forceEdit : !isEditMode;
+
+            // Buttons
+            const btnEdit = document.getElementById('btnEdit');
+            const btnSave = document.getElementById('btnSave');
+            const btnCancel = document.getElementById('btnCancel');
+            const btnAddAgent = document.getElementById('btnAddAgent');
+
+            // Inputs
+            groupNameInput.disabled = !isEditMode;
+            groupDescInput.disabled = !isEditMode;
+
+            if (isEditMode) {
+                // Edit Mode Active
+                btnEdit.classList.add('d-none');
+                btnSave.classList.remove('d-none');
+                btnCancel.classList.remove('d-none');
+                btnAddAgent.classList.remove('d-none');
+
+                // Hide Bulk Action Checkboxes (Disable Bulk Actions)
+                document.querySelectorAll('#groupAgentTable .form-check-input').forEach(cb => cb.disabled = true);
+                if (toolbar.classList.contains('show')) clearSelection(); // Clear selection if entering edit mode
+
+                // Show Remove Buttons
+                document.body.classList.add('edit-mode');
+            } else {
+                // View Mode Active
+                btnEdit.classList.remove('d-none');
+                btnSave.classList.add('d-none');
+                btnCancel.classList.add('d-none');
+                btnAddAgent.classList.add('d-none');
+
+                // Show Bulk Action Checkboxes
+                document.querySelectorAll('#groupAgentTable .form-check-input').forEach(cb => cb.disabled = false);
+
+                // Hide Remove Buttons
+                document.body.classList.remove('edit-mode');
+            }
+        }
+
+        function saveGroupInfo() {
+            if (isNewGroup) {
+                showToast('새로운 그룹 생성 완료 (시뮬레이션)', 'success', () => {
+                    window.location.href = './agent-group-list.html';
+                });
+                return;
+            }
+            showToast('그룹 정보가 저장되었습니다.');
+            toggleEditMode(false);
+        }
+
+        function cancelEdit() {
+            if (isNewGroup) {
+                window.location.href = './agent-group-list.html';
+                return;
+            }
+            // Revert changes if needed (not implemented for mock), just exit mode
+            toggleEditMode(false);
+        }
+
+        function renderAgentTable(agents) {
+            tableBody.innerHTML = '';
+            if (agents.length === 0) {
+                document.getElementById('emptyState').classList.remove('d-none');
+                return;
+            }
+            document.getElementById('emptyState').classList.add('d-none');
+
+            agents.forEach(agent => {
+                const tr = document.createElement('tr');
+                tr.style.cursor = 'pointer';
+                tr.dataset.status = agent.status;
+                tr.dataset.serverType = agent.serverType || '';
+
+                let badgeClass = 'bg-secondary';
+                if (agent.status === 'RUNNING') badgeClass = 'bg-success bg-opacity-10 text-success border border-success';
+                else if (agent.status === 'STOPPED') badgeClass = 'bg-danger bg-opacity-10 text-danger border border-danger';
+                else if (agent.status === 'DEPLOYING') badgeClass = 'bg-warning bg-opacity-10 text-warning border border-warning';
+
+                let serverTypeBadge = '';
+                if (agent.serverType) {
+                    let typeClass = 'bg-light text-secondary border'; // Default (DEV)
+                    if (agent.serverType === 'STG') typeClass = 'bg-success bg-opacity-10 text-success border border-success';
+                    else if (agent.serverType === 'PROD') typeClass = 'bg-primary bg-opacity-10 text-primary border border-primary';
+
+                    serverTypeBadge = `<span class="badge ${typeClass} ms-1">${agent.serverType}</span>`;
+                }
+
+                tr.innerHTML = `
+                    <td class="ps-4">
+                        <div class="form-check">
+                            <input class="form-check-input row-checkbox" type="checkbox" ${isEditMode ? 'disabled' : ''}>
+                        </div>
+                    </td>
+                    <td class="fw-bold text-muted">${agent.id}</td>
+                    <td>
+                        <div class="fw-bold">
+                            ${agent.name}
+                            ${serverTypeBadge}
+                        </div>
+                    </td>
+                    <td><span class="badge ${badgeClass}">${agent.status}</span></td>
+                    <td class="text-end pe-4">
+                        <button class="btn btn-sm btn-outline-info me-1" title="Console View" onclick="event.stopPropagation(); window.location.href='agent-details.html?id=${agent.id}&name=${agent.name}&ip=${agent.ip || ''}&serverType=${agent.serverType || ''}&from=group'">
+                            <i class="bi bi-terminal"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-secondary btn-edit-agent me-1" title="Edit Agent" onclick="event.stopPropagation(); window.location.href='agent-form.html?id=${agent.id}&from=group&serverType=${agent.serverType || ''}'">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger btn-remove-agent" title="Remove from Group" onclick="event.stopPropagation(); removeAgent(this)">
+                            <i class="bi bi-dash-lg"></i>
+                        </button>
+                    </td>
+                `;
+
+                // Add Click Event for Selection (Only in View Mode)
+                tr.addEventListener('click', function (e) {
+                    if (isEditMode) return; // Disable row click selection in Edit Mode
+                    if (e.target.closest('button')) return;
+                    const checkbox = this.querySelector('.row-checkbox');
+                    if (e.target !== checkbox) checkbox.checked = !checkbox.checked;
+                    toggleSelection(this, checkbox.checked);
+                });
+
+                tableBody.appendChild(tr);
+            });
+        }
+
+        selectAllCheckbox.addEventListener('change', function () {
+            if (isEditMode) {
+                this.checked = false; // Prevent checking in edit mode
+                return;
+            }
+            const isChecked = this.checked;
+            const rows = tableBody.querySelectorAll('tr');
+            rows.forEach(row => {
+                const cb = row.querySelector('.row-checkbox');
+                cb.checked = isChecked;
+                toggleSelection(row, isChecked);
+            });
+        });
+
+        function toggleSelection(row, isSelected) {
+            const checkbox = row.querySelector('.row-checkbox');
+            checkbox.checked = isSelected;
+
+            if (isSelected) {
+                row.classList.add('selected');
+                selectedRows.add(row);
+            } else {
+                row.classList.remove('selected');
+                selectedRows.delete(row);
+            }
+            updateToolbar();
+        }
+
+        function updateToolbar() {
+            countBadge.textContent = selectedRows.size;
+            if (selectedRows.size > 0 && !isEditMode) {
+                toolbar.classList.add('show');
+            } else {
+                toolbar.classList.remove('show');
+            }
+
+            // Update Select All Checkbox state
+            const totalRows = tableBody.querySelectorAll('tr').length;
+            selectAllCheckbox.checked = (totalRows > 0 && selectedRows.size === totalRows);
+            selectAllCheckbox.indeterminate = (selectedRows.size > 0 && selectedRows.size < totalRows);
+        }
+
+        function clearSelection() {
+            selectedRows.forEach(row => {
+                row.classList.remove('selected');
+                row.querySelector('.row-checkbox').checked = false;
+            });
+            selectedRows.clear();
+            updateToolbar();
+        }
+
+        // --- Add/Remove Logic ---
+        function openAddAgentModal() {
+            const modal = new bootstrap.Modal(document.getElementById('addAgentModal'));
+            modal.show();
+        }
+
+        function addSelectedAgents() {
+            const checkboxes = document.querySelectorAll('#availableAgentList input:checked');
+            if (checkboxes.length === 0) return;
+
+            checkboxes.forEach(cb => {
+                const name = cb.nextElementSibling.querySelector('strong').innerText;
+                const id = cb.value;
+
+                const tr = document.createElement('tr');
+                tr.style.cursor = 'pointer';
+                tr.dataset.status = 'STOPPED';
+                tr.innerHTML = `
+                    <td class="ps-4"><div class="form-check"><input class="form-check-input row-checkbox" type="checkbox" disabled></div></td>
+                    <td class="fw-bold text-muted">${id}</td>
+                    <td>
+                        <div class="fw-bold">
+                            ${name}
+                            <span class="badge bg-light text-secondary border ms-1">DEV</span>
+                        </div>
+                    </td>
+                    <td><span class="badge bg-danger bg-opacity-10 text-danger border border-danger">STOPPED</span></td>
+                    <td class="text-end pe-4">
+                        <button class="btn btn-sm btn-outline-info me-1" title="Console View" onclick="event.stopPropagation(); window.location.href='agent-details.html?id=${id}&from=group'">
+                            <i class="bi bi-terminal"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-secondary btn-edit-agent me-1" title="Edit Agent" onclick="event.stopPropagation(); window.location.href='agent-form.html?id=${id}&from=group'">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger btn-remove-agent" onclick="event.stopPropagation(); removeAgent(this)">
+                            <i class="bi bi-dash-lg"></i>
+                        </button>
+                    </td>
+                `;
+                // No click event needed for new items in Edit Mode (selection disabled)
+                tableBody.appendChild(tr);
+            });
+
+            document.getElementById('emptyState').classList.add('d-none');
+            const modalEl = document.getElementById('addAgentModal');
+            const modal = bootstrap.Modal.getInstance(modalEl);
+            modal.hide();
+
+            showToast('Agent가 그룹에 추가되었습니다.');
+        }
+
+        function removeAgent(btn) {
+            showConfirm('이 그룹에서 해당 Agent를 제외하시겠습니까?', () => {
+                const row = btn.closest('tr');
+                if (selectedRows.has(row)) {
+                    toggleSelection(row, false);
+                }
+                row.remove();
+                if (tableBody.querySelectorAll('tr').length === 0) {
+                    document.getElementById('emptyState').classList.remove('d-none');
+                }
+                showGlobalToast('Agent가 그룹에서 제외되었습니다.', 'warning');
+            });
+        }
+
+        // --- Group Bulk Action ---
+        function runGroupBulkAction(action) {
+            const mode = document.querySelector('input[name="execMode"]:checked').value;
+
+            const selectedAgents = Array.from(selectedRows).map(row => {
+                return {
+                    name: row.querySelector('td:nth-child(3) .fw-bold').childNodes[0].textContent.trim(),
+                    serverType: row.dataset.serverType || (row.querySelector('.badge.bg-primary') ? 'PROD' : 'DEV')
+                };
+            });
+
+            if (selectedAgents.length === 0) return;
+
+            const agentNames = selectedAgents.map(a => a.name);
+            const prodAgents = selectedAgents.filter(a => a.serverType === 'PROD').map(a => a.name);
+
+            const executeAction = () => {
+                showGlobalToast(`${action} command initiated in ${mode} mode...`);
+                setProcessingState(true); // Disable Edit Button
+
+                let completedCount = 0;
+                const total = agentNames.length;
+                const checkCompletion = () => {
+                    completedCount++;
+                    if (completedCount === total) {
+                        setTimeout(() => {
+                            showGlobalToast('All commands completed.');
+                            setProcessingState(false); // Re-enable Edit Button
+                        }, 500);
+                    }
+                };
+
+                if (mode === 'PARALLEL') {
+                    // Parallel Simulation
+                    agentNames.forEach(name => {
+                        console.log(`[PARALLEL] Sending ${action} to ${name}`);
+                        setTimeout(() => {
+                            showGlobalToast(`[${name}] ${action} Completed!`);
+                            checkCompletion();
+                        }, Math.random() * 2000 + 500);
+                    });
+                } else {
+                    // Sequential Simulation
+                    let delay = 0;
+                    agentNames.forEach((name, index) => {
+                        setTimeout(() => {
+                            console.log(`[SEQUENTIAL] Sending ${action} to ${name}`);
+                            showGlobalToast(`[${name}] ${action} Completed! (${index + 1}/${agentNames.length})`);
+                            checkCompletion();
+                        }, delay);
+                        delay += 1500;
+                    });
+                }
+            };
+
+            if (prodAgents.length > 0) {
+                showProdSafetyConfirm(action, prodAgents, executeAction);
+            } else {
+                const confirmMsg = `[${mode}] 모드로 ${agentNames.length}개의 에이전트에 [${action}] 명령을 수행하시겠습니까?\n\n대상: ${agentNames.join(', ')}`;
+                showConfirm(confirmMsg, executeAction);
+            }
+        }
+
+        function setProcessingState(isProcessing) {
+            const btnEdit = document.getElementById('btnEdit');
+
+            // Toggle Group Edit Button
+            if (isProcessing) {
+                btnEdit.disabled = true;
+                btnEdit.classList.add('disabled');
+                btnEdit.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Processing...';
+            } else {
+                btnEdit.disabled = false;
+                btnEdit.classList.remove('disabled');
+                btnEdit.innerText = 'Edit';
+            }
+
+            // Toggle Agent Row Edit Buttons
+            const rowEditButtons = document.querySelectorAll('.btn-edit-agent');
+            rowEditButtons.forEach(btn => {
+                btn.disabled = isProcessing; // Native Disable
+                if (isProcessing) {
+                    btn.classList.add('disabled');
+                    btn.style.pointerEvents = 'none'; // Extra safety
+                    btn.style.opacity = '0.5';
+                } else {
+                    btn.classList.remove('disabled');
+                    btn.style.pointerEvents = 'auto';
+                    btn.style.opacity = '1';
+                }
+            });
+        }
+
+        function showGlobalToast(msg, type = 'success') {
+            const container = document.querySelector('.toast-container');
+            // If container doesn't exist, fallback or create it (though it should exist from HTML)
+            if (!container) return;
+
+            // Create new toast element
+            const toastEl = document.createElement('div');
+            toastEl.className = 'toast align-items-center border-0 mb-2';
+            toastEl.role = 'alert';
+            toastEl.ariaLive = 'assertive';
+            toastEl.ariaAtomic = 'true';
+
+            // Set colors
+            if (type === 'warning' || type === 'danger') {
+                toastEl.classList.add('text-bg-danger');
+            } else {
+                toastEl.classList.add('text-bg-dark');
+            }
+
+            toastEl.innerHTML = `
+                <div class="d-flex">
+                    <div class="toast-body">
+                        ${msg}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            `;
+
+            container.appendChild(toastEl);
+            const toast = new bootstrap.Toast(toastEl, { delay: 3000 }); // Auto hide after 3s
+            toast.show();
+
+            // Remove from DOM after hidden
+            toastEl.addEventListener('hidden.bs.toast', () => {
+                toastEl.remove();
+            });
+        }
+
+        // Initial setup for View Mode
+        toggleEditMode(false);
+    </script>
+</body>
+
+</html>
