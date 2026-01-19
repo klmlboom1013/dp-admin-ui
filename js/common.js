@@ -249,3 +249,27 @@ function showProdSafetyConfirm(action, agentNames, callback) {
 
     modal.show();
 }
+
+/**
+ * Admin Menu Visibility Control
+ * Applies to elements with class 'menu-admin-only'
+ * @param {string} level - User level (e.g., 'TopAdmin', 'Master')
+ */
+function updateAdminMenuVisibility(level) {
+    // If level is not provided, try to use global currentUser
+    if (!level && typeof currentUser !== 'undefined') {
+        level = currentUser.level;
+    }
+    // Default to TopAdmin if still unknown (Preserve existing behavior for static pages)
+    if (!level) level = 'TopAdmin';
+
+    const items = document.querySelectorAll('.menu-admin-only');
+    items.forEach(item => {
+        if (level === 'TopAdmin') {
+            // Remove inline style to revert to CSS default (usually visible)
+            item.style.display = ''; 
+        } else {
+            item.style.display = 'none';
+        }
+    });
+}

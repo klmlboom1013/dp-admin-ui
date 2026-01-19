@@ -43,8 +43,9 @@
             <hr class="text-secondary">
             <span class="sidebar-heading">System</span>
             <ul class="nav nav-pills flex-column">
-                <li><a href="#" class="nav-link"><i class="bi bi-people-fill"></i>사용자 관리</a></li>
-                <li><a href="#" class="nav-link"><i class="bi bi-gear-fill"></i>환경 설정</a></li>
+                <li><a href="./user-list.html" class="nav-link"><i class="bi bi-people-fill"></i>사용자 관리</a></li>
+                <li class="menu-admin-only"><a href="./settings.html" class="nav-link"><i class="bi bi-gear-fill"></i>환경
+                        설정</a></li>
             </ul>
         </div>
 
@@ -57,9 +58,20 @@
                 </a>
             </div>
 
+            <!-- Search Bar -->
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <div class="input-group">
+                        <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+                        <input type="text" id="groupSearchInput" class="form-control"
+                            placeholder="Search by Group Name..." onkeyup="filterGroups()">
+                    </div>
+                </div>
+            </div>
+
             <div class="card shadow-sm border-0">
                 <div class="card-body p-0">
-                    <table class="table table-hover align-middle mb-0">
+                    <table class="table table-hover align-middle mb-0" id="groupTable">
                         <thead class="table-light">
                             <tr>
                                 <th scope="col" class="ps-4" style="width: 50px;">NO</th>
@@ -74,7 +86,7 @@
                             <tr style="cursor: pointer;"
                                 onclick="window.location.href='./agent-group-details.html?id=G-001&name=Payment-Group&desc=Payment Related Agents'">
                                 <td class="ps-4 fw-bold text-muted">1</td>
-                                <td>
+                                <td class="group-name">
                                     <div class="fw-bold">Payment-Group</div>
                                 </td>
                                 <td class="text-muted">Payment Related Agents</td>
@@ -92,7 +104,7 @@
                             <tr style="cursor: pointer;"
                                 onclick="window.location.href='./agent-group-details.html?id=G-002&name=Order-Group&desc=Order Order Processing Agents'">
                                 <td class="ps-4 fw-bold text-muted">2</td>
-                                <td>
+                                <td class="group-name">
                                     <div class="fw-bold">Order-Group</div>
                                 </td>
                                 <td class="text-muted">Order Processing Agents</td>
@@ -134,8 +146,27 @@
             showConfirm('정말 그룹을 삭제하시겠습니까?\n(그룹을 삭제해도 Agent는 삭제되지 않습니다.)', () => {
                 const row = btn.closest('tr');
                 row.remove();
-                showGlobalToast('Agent 그룹이 삭제되었습니다.', 'warning');
+                showToast('Agent 그룹이 삭제되었습니다.', 'warning'); // Fixed: Changed showGlobalToast to showToast as per common.js
             });
+        }
+
+        function filterGroups() {
+            const input = document.getElementById('groupSearchInput');
+            const filter = input.value.toUpperCase();
+            const table = document.getElementById('groupTable');
+            const tr = table.getElementsByTagName('tr');
+
+            for (let i = 1; i < tr.length; i++) { // Start from 1 to skip header
+                const td = tr[i].querySelector('.group-name');
+                if (td) {
+                    const txtValue = td.textContent || td.innerText;
+                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                        tr[i].style.display = "";
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
         }
     </script>
 </body>

@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management - Deploy System Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="css/layout.css" rel="stylesheet">
+</head>
+
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark border-bottom border-secondary sticky-top">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand fw-bold" href="./dashboard.html">
+                <i class="bi bi-rocket-takeoff-fill me-2"></i>Deploy System
+            </a>
+            <div class="d-flex align-items-center text-white">
+                <small class="me-3">Admin (김관리)</small>
+                <a href="./login.html" class="btn btn-sm btn-outline-light">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="d-flex">
+        <!-- Sidebar -->
+        <div class="sidebar d-flex flex-column flex-shrink-0 p-3">
+            <span class="sidebar-heading">Monitoring</span>
+            <ul class="nav nav-pills flex-column">
+                <li><a href="./dashboard.html" class="nav-link"><i class="bi bi-speedometer2"></i>대시보드 (Dashboard)</a>
+                </li>
+            </ul>
+            <hr class="text-secondary">
+            <span class="sidebar-heading">Management</span>
+            <ul class="nav nav-pills flex-column mb-auto">
+                <li><a href="./agent-list.html" class="nav-link"><i class="bi bi-hdd-rack"></i>Agent 관리</a></li>
+                <li><a href="./agent-group-list.html" class="nav-link"><i class="bi bi-collection"></i>Agent 그룹 관리</a>
+                </li>
+                <li><a href="./history.html" class="nav-link"><i class="bi bi-clock-history"></i>배포/구동 이력</a></li>
+            </ul>
+            <hr class="text-secondary">
+            <span class="sidebar-heading">System</span>
+            <ul class="nav nav-pills flex-column">
+                <li><a href="./user-list.html" class="nav-link active"><i class="bi bi-people-fill"></i>사용자 관리</a></li>
+                <li class="menu-admin-only"><a href="./settings.html" class="nav-link"><i class="bi bi-gear-fill"></i>환경
+                        설정</a></li>
+            </ul>
+        </div>
+
+        <!-- Content Area -->
+        <div class="content-area">
+            <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+                <h4><i class="bi bi-people-fill me-2"></i>사용자 관리 (User Management)</h4>
+
+                <!-- Permission Simulation Control -->
+                <div class="d-flex align-items-center bg-white p-2 border rounded shadow-sm">
+                    <span class="me-2 small fw-bold text-muted"><i class="bi bi-person-badge"></i> Current User
+                        Context:</span>
+                    <select class="form-select form-select-sm" style="width: 200px;" id="userContextSelect">
+                        <option value="admin">System Admin (Super)</option>
+                        <option value="hong.kd">홍길동 (Master/PD)</option>
+                        <option value="kim.cs">김철수 (Content/SO)</option>
+                        <option value="lee.yh">이영희 (Report/PD)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-0">
+                    <table class="table table-hover align-middle mb-0" id="userTable">
+                        <thead class="table-light">
+                            <tr>
+                                <th scope="col" class="ps-4">이름 (Name)</th>
+                                <th scope="col">소속 / 팀</th>
+                                <th scope="col">직급</th>
+                                <th scope="col">상태 (Status)</th>
+                                <th scope="col">계정 등급 (Level)</th>
+                                <th scope="col">계정 그룹 (Group)</th>
+                                <th scope="col">사용 만료일</th>
+                                <th scope="col" class="text-end pe-4">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Dynamic Content -->
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Pagination (Static for now) -->
+                <div class="card-footer bg-white d-flex justify-content-end py-3">
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination pagination-sm mb-0">
+                            <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
+                            <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                            <li class="page-item"><a class="page-link" href="#">Next</a></li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/common.js"></script>
+    <script>
+        // Mock Data
+        const users = [
+            {
+                id: 'hong.kd', name: '홍길동', dept: 'Tech1실', team: '플랫폼개발팀', rank: '팀장',
+                status: 'NORMAL', level: 'Master', group: 'PD', expireDate: '2024-12-31'
+            },
+            {
+                id: 'kim.cs', name: '김철수', dept: 'Tech2실', team: '서비스운영팀', rank: '매니저',
+                status: 'PENDING_SIGNUP', level: 'Content', group: 'SO', expireDate: '2024-06-30'
+            },
+            {
+                id: 'lee.yh', name: '이영희', dept: 'Tech1실', team: '데이터분석팀', rank: '매니저',
+                status: 'PENDING_DELETE', level: 'Report', group: 'PD', expireDate: '2024-12-31'
+            }
+        ];
+
+        // Current User Logic (Simulation)
+        let currentUser = {
+            id: 'admin',
+            level: 'TopAdmin', // System Admin
+            group: 'SYSTEM'
+        };
+
+        const contextSelect = document.getElementById('userContextSelect');
+        contextSelect.addEventListener('change', (e) => {
+            const selectedId = e.target.value;
+            if (selectedId === 'admin') {
+                currentUser = { id: 'admin', level: 'TopAdmin', group: 'SYSTEM' };
+            } else {
+                // Find user from mock data
+                const user = users.find(u => u.id === selectedId);
+                if (user) {
+                    currentUser = { ...user };
+                }
+            }
+            renderTable();
+            updateAdminMenuVisibility(currentUser.level); // Update Menu
+            showToast(`User context switched to: ${currentUser.id === 'admin' ? 'Admin' : currentUser.name}`);
+        });
+
+        // Permission Check Function
+        function canEditOrDelete(targetUser) {
+            // 1. Admin: All allowed
+            if (currentUser.level === 'TopAdmin') return true;
+
+            // 2. Self: Always allowed
+            if (currentUser.id === targetUser.id) return true;
+
+            // 3. Master: Self + Same Group
+            if (currentUser.level === 'Master') {
+                return currentUser.group === targetUser.group;
+            }
+
+            // 4. Content/Report: Self Only (Already covered by check #2)
+            return false;
+        }
+
+        // Admin Status Action Handler
+        function handleStatusAction(userId, currentStatus) {
+            if (currentUser.level !== 'TopAdmin') return;
+
+            const userIndex = users.findIndex(u => u.id === userId);
+            if (userIndex === -1) return;
+
+            if (currentStatus === 'PENDING_SIGNUP') {
+                showConfirm('가입완료 상태로 변경 할까요?', function () {
+                    users[userIndex].status = 'NORMAL';
+                    renderTable();
+                    showToast(`${userId} 계정이 정상 상태로 변경되었습니다.`, 'success');
+                });
+            } else if (currentStatus === 'PENDING_DELETE') {
+                showConfirm('계정을 삭제 할까요?', function () {
+                    users.splice(userIndex, 1);
+                    renderTable();
+                    showToast(`${userId} 계정이 삭제되었습니다.`, 'success');
+                });
+            }
+        }
+
+        // Delete Button Handler
+        function handleDeleteClick(userId) {
+            const userIndex = users.findIndex(u => u.id === userId);
+            if (userIndex === -1) return;
+            const user = users[userIndex];
+
+            if (currentUser.level === 'TopAdmin') {
+                // Admin: Immediate Delete
+                showConfirm(`[관리자] '${user.name}' 계정을 영구히 삭제하시겠습니까?`, function () {
+                    users.splice(userIndex, 1);
+                    renderTable();
+                    showToast('계정이 삭제되었습니다.', 'success');
+                });
+            } else {
+                // Non-Admin: Request Delete
+                showConfirm('계정 삭제를 관리자에게 요청하시겠습니까?<br><span class="text-danger small">(상태가 [삭제대기]로 변경됩니다)</span>', function () {
+                    user.status = 'PENDING_DELETE';
+                    renderTable();
+                    showToast('계정 삭제 요청이 접수되었습니다.', 'success');
+                });
+            }
+        }
+
+        function renderTable() {
+            const tbody = document.querySelector('#userTable tbody');
+            tbody.innerHTML = '';
+
+            // Filter Logic
+            let displayUsers = users;
+            if (currentUser.level === 'Content' || currentUser.level === 'Report') {
+                // Content/Report: Show ONLY Self
+                displayUsers = users.filter(u => u.id === currentUser.id);
+            } else if (currentUser.level === 'Master') {
+                // Master: Show Self + Same Group
+                displayUsers = users.filter(u => u.group === currentUser.group);
+            }
+
+            displayUsers.forEach(user => {
+                const tr = document.createElement('tr');
+
+                // Status Badge Logic
+                let statusBadge = '';
+                let statusAction = '';
+                let cursorStyle = '';
+
+                // Admin & Actionable User Status
+                if (currentUser.level === 'TopAdmin') {
+                    if (user.status === 'PENDING_SIGNUP') {
+                        statusAction = `onclick="handleStatusAction('${user.id}', 'PENDING_SIGNUP')"`;
+                        cursorStyle = 'cursor: pointer;';
+                    } else if (user.status === 'PENDING_DELETE') {
+                        statusAction = `onclick="handleStatusAction('${user.id}', 'PENDING_DELETE')"`;
+                        cursorStyle = 'cursor: pointer;';
+                    }
+                }
+
+                if (user.status === 'NORMAL') {
+                    statusBadge = '<span class="badge bg-success">정상</span>';
+                } else if (user.status === 'PENDING_SIGNUP') {
+                    statusBadge = `<span class="badge bg-warning text-dark shadow-sm" style="${cursorStyle}" ${statusAction} title="${currentUser.level === 'TopAdmin' ? '클릭하여 가입 승인' : ''}">가입대기</span>`;
+                } else if (user.status === 'PENDING_DELETE') {
+                    statusBadge = `<span class="badge bg-danger shadow-sm" style="${cursorStyle}" ${statusAction} title="${currentUser.level === 'TopAdmin' ? '클릭하여 계정 삭제' : ''}">삭제대기</span>`;
+                }
+
+                // Level Badge Logic
+                let levelClass = 'bg-secondary';
+                if (user.level === 'Master') levelClass = 'bg-danger';
+                else if (user.level === 'Content') levelClass = 'bg-primary';
+
+                // Group Badge Logic
+                let groupClass = 'bg-dark';
+                if (user.group === 'SO') groupClass = 'bg-info text-dark';
+
+                // Permission Check
+                const isActionAllowed = canEditOrDelete(user);
+                const btnState = isActionAllowed ? '' : 'disabled style="opacity: 0.3; cursor: not-allowed;"';
+                const btnClass = isActionAllowed ? '' : 'disabled'; // Bootstrap disabled class
+
+                tr.innerHTML = `
+                    <td class="ps-4">
+                        <div class="fw-bold">${user.name}</div>
+                        <small class="text-muted">${user.id}</small>
+                    </td>
+                    <td>
+                        <div>${user.dept}</div>
+                        <small class="text-muted">${user.team}</small>
+                    </td>
+                    <td>${user.rank}</td>
+                    <td>${statusBadge}</td>
+                    <td><span class="badge ${levelClass}">${user.level}</span></td>
+                    <td><span class="badge ${groupClass}">${user.group}</span></td>
+                    <td>${user.expireDate}</td>
+                    <td class="text-end pe-4">
+                        <button class="btn btn-sm btn-outline-secondary me-1" ${btnState} onclick="location.href='./user-form.html?id=${user.id}'">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger" ${btnState} onclick="handleDeleteClick('${user.id}')">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Initial Render
+        renderTable();
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/common.js"></script>
+</body>
+
+</html>

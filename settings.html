@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Settings - Deploy System Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="css/layout.css" rel="stylesheet">
+    <style>
+        .perm-checkbox {
+            width: 1.2em;
+            height: 1.2em;
+            cursor: pointer;
+        }
+
+        .option-tag {
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark border-bottom border-secondary sticky-top">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand fw-bold" href="./dashboard.html">
+                <i class="bi bi-rocket-takeoff-fill me-2"></i>Deploy System
+            </a>
+            <div class="d-flex align-items-center text-white">
+                <small class="me-3">Admin (김관리)</small>
+                <a href="./login.html" class="btn btn-sm btn-outline-light">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="d-flex">
+        <!-- Sidebar -->
+        <div class="sidebar d-flex flex-column flex-shrink-0 p-3">
+            <span class="sidebar-heading">Monitoring</span>
+            <ul class="nav nav-pills flex-column">
+                <li><a href="./dashboard.html" class="nav-link"><i class="bi bi-speedometer2"></i>대시보드 (Dashboard)</a>
+                </li>
+            </ul>
+            <hr class="text-secondary">
+            <span class="sidebar-heading">Management</span>
+            <ul class="nav nav-pills flex-column mb-auto">
+                <li><a href="./agent-list.html" class="nav-link"><i class="bi bi-hdd-rack"></i>Agent 관리</a></li>
+                <li><a href="./agent-group-list.html" class="nav-link"><i class="bi bi-collection"></i>Agent 그룹 관리</a>
+                </li>
+                <li><a href="./history.html" class="nav-link"><i class="bi bi-clock-history"></i>배포/구동 이력</a></li>
+            </ul>
+            <hr class="text-secondary">
+            <span class="sidebar-heading">System</span>
+            <ul class="nav nav-pills flex-column">
+                <li><a href="./user-list.html" class="nav-link"><i class="bi bi-people-fill"></i>사용자 관리</a></li>
+                <li class="menu-admin-only"><a href="./settings.html" class="nav-link active"><i
+                            class="bi bi-gear-fill"></i>환경 설정</a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Content Area -->
+        <div class="content-area">
+            <div class="mb-4 pb-2 border-bottom">
+                <h4><i class="bi bi-gear-fill me-2"></i>환경 설정 (System Settings)</h4>
+                <p class="text-muted small mb-0">시스템 전반의 권한 및 공통 코드를 관리합니다. (Admin 전용)</p>
+            </div>
+
+            <!-- Tabs -->
+            <ul class="nav nav-tabs mb-4" id="settingsTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="menu-tab" data-bs-toggle="tab" data-bs-target="#menu-perms"
+                        type="button" role="tab"><i class="bi bi-list-check me-2"></i>메뉴 접근 권한</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="agent-tab" data-bs-toggle="tab" data-bs-target="#agent-perms"
+                        type="button" role="tab"><i class="bi bi-shield-lock me-2"></i>Agent 실행 권한</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="options-tab" data-bs-toggle="tab" data-bs-target="#user-options"
+                        type="button" role="tab"><i class="bi bi-person-lines-fill me-2"></i>회원 정보 옵션</button>
+                </li>
+            </ul>
+
+            <div class="tab-content" id="settingsTabContent">
+
+                <!-- Tab 1: Menu Permissions -->
+                <div class="tab-pane fade show active" id="menu-perms" role="tabpanel">
+                    <div class="card shadow-sm border-0">
+                        <div class="card-header bg-light fw-bold">메뉴별 접근 권한 설정</div>
+                        <div class="card-body p-0">
+                            <div class="alert alert-info m-3 small">
+                                <i class="bi bi-info-circle-fill me-2"></i>
+                                'TopAdmin'은 모든 메뉴에 접근 가능하며 수정할 수 없습니다. 그 외 등급의 접근 권한을 설정하세요.
+                            </div>
+                            <table class="table table-hover align-middle mb-0 text-center">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class="text-start ps-4">Level (등급)</th>
+                                        <th>대시보드</th>
+                                        <th>Agent 관리</th>
+                                        <th>Agent 그룹 관리</th>
+                                        <th>배포/구동 이력</th>
+                                        <th>사용자 관리</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="menuPermsBody">
+                                    <!-- Dynamic Content -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="card-footer bg-white text-end">
+                            <button class="btn btn-primary" onclick="saveMenuPerms()"><i
+                                    class="bi bi-save me-2"></i>변경사항 저장</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab 2: Agent Permissions -->
+                <div class="tab-pane fade" id="agent-perms" role="tabpanel">
+                    <div class="card shadow-sm border-0">
+                        <div class="card-header bg-light fw-bold">Agent 실행 및 제어 권한 설정</div>
+                        <div class="card-body p-0">
+                            <div class="alert alert-warning m-3 small">
+                                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                                <b>PROD (운영계)</b> 실행 권한은 신중하게 설정하십시오. 'View' 권한이 없으면 해당 Agent는 목록에 보이지 않습니다.
+                            </div>
+                            <table class="table table-hover align-middle mb-0 text-center">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class="text-start ps-4">Level (등급)</th>
+                                        <th>View (조회)</th>
+                                        <th>Edit (수정)</th>
+                                        <th>Action (시작/중지)</th>
+                                        <th>Bulk Action (일괄실행)</th>
+                                        <th class="text-danger bg-danger bg-opacity-10">PROD Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="agentPermsBody">
+                                    <!-- Dynamic Content -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="card-footer bg-white text-end">
+                            <button class="btn btn-primary" onclick="saveAgentPerms()"><i
+                                    class="bi bi-save me-2"></i>변경사항 저장</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab 3: User Info Options -->
+                <div class="tab-pane fade" id="user-options" role="tabpanel">
+                    <div class="row g-4">
+                        <!-- Level Management -->
+                        <div class="col-md-6">
+                            <div class="card shadow-sm border-0 h-100">
+                                <div
+                                    class="card-header bg-light fw-bold d-flex justify-content-between align-items-center">
+                                    <span>사용자 등급 (Level) 관리</span>
+                                    <button class="btn btn-sm btn-outline-primary" onclick="addOptionItem('level')"><i
+                                            class="bi bi-plus"></i> 추가</button>
+                                </div>
+                                <div class="card-body">
+                                    <ul class="list-group list-group-flush" id="levelList">
+                                        <!-- Dynamic Content -->
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Dept Management -->
+                        <div class="col-md-6">
+                            <div class="card shadow-sm border-0 h-100">
+                                <div
+                                    class="card-header bg-light fw-bold d-flex justify-content-between align-items-center">
+                                    <span>소속 (Department) 관리</span>
+                                    <button class="btn btn-sm btn-outline-primary" onclick="addOptionItem('dept')"><i
+                                            class="bi bi-plus"></i> 추가</button>
+                                </div>
+                                <div class="card-body">
+                                    <ul class="list-group list-group-flush" id="deptList">
+                                        <!-- Dynamic Content -->
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Common Toast/Confirm -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/common.js"></script>
+    <!-- Settings Logic -->
+    <script src="js/settings.js"></script>
+    <script>
+        // Check Admin Permission on Load
+        document.addEventListener("DOMContentLoaded", function () {
+            // Note: In a real app, this should be server-side. 
+            // Here we just redirect if not admin (simulated based on localStorage if we tracked session there, 
+            // but currently settings.html is menu-restricted).
+            // Since this is a standalone page, we'll assume access means authorized or allow testing.
+        });
+    </script>
+</body>
+
+</html>

@@ -53,8 +53,9 @@
             <hr class="text-secondary">
             <span class="sidebar-heading">System</span>
             <ul class="nav nav-pills flex-column">
-                <li><a href="#" class="nav-link"><i class="bi bi-people-fill"></i>사용자 관리</a></li>
-                <li><a href="#" class="nav-link"><i class="bi bi-gear-fill"></i>환경 설정</a></li>
+                <li><a href="./user-list.html" class="nav-link"><i class="bi bi-people-fill"></i>사용자 관리</a></li>
+                <li class="menu-admin-only"><a href="./settings.html" class="nav-link"><i class="bi bi-gear-fill"></i>환경
+                        설정</a></li>
             </ul>
         </div>
 
@@ -116,7 +117,9 @@
                                 </th>
                                 <th scope="col">ID</th>
                                 <th scope="col">Name</th>
+                                <th scope="col">IP Address</th>
                                 <th scope="col">Status</th>
+                                <th scope="col">Last Update</th>
                                 <th scope="col" class="text-end pe-4">Actions</th>
                             </tr>
                         </thead>
@@ -245,8 +248,8 @@
 
             // Generate some mock agents for this group
             renderAgentTable([
-                { id: 'A-003', name: 'Order-API-01', status: 'DEPLOYING', serverType: 'DEV' },
-                { id: 'A-006', name: 'Order-API-02', status: 'RUNNING', serverType: 'PROD' }
+                { id: 'A-003', name: 'Order-API-01', status: 'STARTING', serverType: 'DEV', ip: '192.168.0.10:8080', lastUpdate: '2024-01-19 11:30' },
+                { id: 'A-006', name: 'Order-API-02', status: 'RUNNING', serverType: 'PROD', ip: '10.20.30.43:8080', lastUpdate: '2024-01-19 10:00' }
             ]);
         } else {
             // New Group -> Default to Edit Mode
@@ -337,7 +340,8 @@
                 let badgeClass = 'bg-secondary';
                 if (agent.status === 'RUNNING') badgeClass = 'bg-success bg-opacity-10 text-success border border-success';
                 else if (agent.status === 'STOPPED') badgeClass = 'bg-danger bg-opacity-10 text-danger border border-danger';
-                else if (agent.status === 'DEPLOYING') badgeClass = 'bg-warning bg-opacity-10 text-warning border border-warning';
+                else if (agent.status === 'STARTING') badgeClass = 'bg-info bg-opacity-10 text-info border border-info';
+                else if (agent.status === 'STOPPING') badgeClass = 'bg-danger bg-opacity-10 text-danger border border-danger';
 
                 let serverTypeBadge = '';
                 if (agent.serverType) {
@@ -348,10 +352,14 @@
                     serverTypeBadge = `<span class="badge ${typeClass} ms-1">${agent.serverType}</span>`;
                 }
 
+                const lastUpdate = agent.lastUpdate || '2024-01-19 10:00';
+                const isTransient = agent.status === 'STARTING' || agent.status === 'STOPPING';
+                const disabledAttr = isTransient ? 'disabled' : '';
+
                 tr.innerHTML = `
                     <td class="ps-4">
                         <div class="form-check">
-                            <input class="form-check-input row-checkbox" type="checkbox" ${isEditMode ? 'disabled' : ''}>
+                            <input class="form-check-input row-checkbox" type="checkbox" ${isEditMode || isTransient ? 'disabled' : ''}>
                         </div>
                     </td>
                     <td class="fw-bold text-muted">${agent.id}</td>
@@ -361,15 +369,17 @@
                             ${serverTypeBadge}
                         </div>
                     </td>
+                    <td>${agent.ip || '192.168.0.1'}</td>
                     <td><span class="badge ${badgeClass}">${agent.status}</span></td>
+                    <td>${lastUpdate}</td>
                     <td class="text-end pe-4">
-                        <button class="btn btn-sm btn-outline-info me-1" title="Console View" onclick="event.stopPropagation(); window.location.href='agent-details.html?id=${agent.id}&name=${agent.name}&ip=${agent.ip || ''}&serverType=${agent.serverType || ''}&from=group'">
+                        <button class="btn btn-sm btn-outline-info me-1" title="Console View" onclick="event.stopPropagation(); window.location.href='agent-details.html?id=${agent.id}&name=${agent.name}&ip=${agent.ip || ''}&serverType=${agent.serverType || ''}&from=group'" ${disabledAttr}>
                             <i class="bi bi-terminal"></i>
                         </button>
-                        <button class="btn btn-sm btn-outline-secondary btn-edit-agent me-1" title="Edit Agent" onclick="event.stopPropagation(); window.location.href='agent-form.html?id=${agent.id}&from=group&serverType=${agent.serverType || ''}'">
+                        <button class="btn btn-sm btn-outline-secondary btn-edit-agent me-1" title="Edit Agent" onclick="event.stopPropagation(); window.location.href='agent-form.html?id=${agent.id}&from=group&serverType=${agent.serverType || ''}'" ${disabledAttr}>
                             <i class="bi bi-pencil"></i>
                         </button>
-                        <button class="btn btn-sm btn-outline-danger btn-remove-agent" title="Remove from Group" onclick="event.stopPropagation(); removeAgent(this)">
+                        <button class="btn btn-sm btn-outline-danger btn-remove-agent" title="Remove from Group" onclick="event.stopPropagation(); removeAgent(this)" ${disabledAttr}>
                             <i class="bi bi-dash-lg"></i>
                         </button>
                     </td>
@@ -378,6 +388,9 @@
                 // Add Click Event for Selection (Only in View Mode)
                 tr.addEventListener('click', function (e) {
                     if (isEditMode) return; // Disable row click selection in Edit Mode
+                    // Prevent selection for transient statuses
+                    if (agent.status === 'STARTING' || agent.status === 'STOPPING') return;
+
                     if (e.target.closest('button')) return;
                     const checkbox = this.querySelector('.row-checkbox');
                     if (e.target !== checkbox) checkbox.checked = !checkbox.checked;
@@ -397,6 +410,9 @@
             const rows = tableBody.querySelectorAll('tr');
             rows.forEach(row => {
                 const cb = row.querySelector('.row-checkbox');
+                // Skip if disabled (transient status or edit mode)
+                if (cb.disabled) return;
+
                 cb.checked = isChecked;
                 toggleSelection(row, isChecked);
             });

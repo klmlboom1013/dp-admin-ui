@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Form - Deploy System Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="css/layout.css" rel="stylesheet">
+</head>
+
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark border-bottom border-secondary sticky-top">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand fw-bold" href="./dashboard.html">
+                <i class="bi bi-rocket-takeoff-fill me-2"></i>Deploy System
+            </a>
+            <div class="d-flex align-items-center text-white">
+                <small class="me-3">Admin (김관리)</small>
+                <a href="./login.html" class="btn btn-sm btn-outline-light">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="d-flex">
+        <!-- Sidebar -->
+        <div class="sidebar d-flex flex-column flex-shrink-0 p-3">
+            <span class="sidebar-heading">Monitoring</span>
+            <ul class="nav nav-pills flex-column">
+                <li><a href="./dashboard.html" class="nav-link"><i class="bi bi-speedometer2"></i>대시보드 (Dashboard)</a>
+                </li>
+            </ul>
+            <hr class="text-secondary">
+            <span class="sidebar-heading">Management</span>
+            <ul class="nav nav-pills flex-column mb-auto">
+                <li><a href="./agent-list.html" class="nav-link"><i class="bi bi-hdd-rack"></i>Agent 관리</a></li>
+                <li><a href="./agent-group-list.html" class="nav-link"><i class="bi bi-collection"></i>Agent 그룹 관리</a>
+                </li>
+                <li><a href="./history.html" class="nav-link"><i class="bi bi-clock-history"></i>배포/구동 이력</a></li>
+            </ul>
+            <hr class="text-secondary">
+            <span class="sidebar-heading">System</span>
+            <ul class="nav nav-pills flex-column">
+                <li><a href="./user-list.html" class="nav-link active"><i class="bi bi-people-fill"></i>사용자 관리</a></li>
+                <li class="menu-admin-only"><a href="./settings.html" class="nav-link"><i class="bi bi-gear-fill"></i>환경
+                        설정</a></li>
+            </ul>
+        </div>
+
+        <!-- Content Area -->
+        <div class="content-area">
+            <div class="mb-4 pb-2 border-bottom d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center">
+                    <a href="./user-list.html" id="btnBack" class="text-decoration-none text-muted me-3 fs-5"
+                        title="Go Back"><i class="bi bi-arrow-left"></i></a>
+                    <h4 class="mb-0">사용자 정보 수정</h4>
+                </div>
+
+                <!-- Permission Simulation Control -->
+                <div class="d-flex align-items-center bg-white p-2 border rounded shadow-sm">
+                    <span class="me-2 small fw-bold text-muted"><i class="bi bi-person-badge"></i> Current User
+                        Context:</span>
+                    <select class="form-select form-select-sm" style="width: 200px;" id="userContextSelect">
+                        <option value="admin">System Admin (Super)</option>
+                        <option value="hong.kd">홍길동 (Master/PD)</option>
+                        <option value="kim.cs">김철수 (Content/SO)</option>
+                        <option value="lee.yh">이영희 (Report/PD)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="card shadow-sm border-0">
+                        <div class="card-body p-4">
+                            <form onsubmit="event.preventDefault(); handleSave();">
+
+                                <h5 class="mb-3 text-secondary border-bottom pb-2">기본 정보 (Basic Info)</h5>
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="userId" class="form-label fw-bold">아이디 (ID) <span
+                                                class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="userId" readonly>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="userName" class="form-label fw-bold">이름 (Name) <span
+                                                class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="userName" required>
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="userEmail" class="form-label">이메일 (Email)</label>
+                                        <input type="email" class="form-control" id="userEmail">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="userPhone" class="form-label">휴대폰 번호 (Phone)</label>
+                                        <input type="tel" class="form-control" id="userPhone">
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="userPassword" class="form-label">비밀번호 변경 (Password)</label>
+                                        <input type="password" class="form-control" id="userPassword"
+                                            placeholder="변경시에만 입력">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="userPasswordConfirm" class="form-label">비밀번호 확인 (Confirm)</label>
+                                        <input type="password" class="form-control" id="userPasswordConfirm"
+                                            placeholder="변경시에만 입력">
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="userDept" class="form-label">소속 (Department)</label>
+                                        <input type="text" class="form-control" id="userDept" list="deptOptions"
+                                            placeholder="직접 입력 또는 선택">
+                                        <datalist id="deptOptions">
+                                            <option value="Tech1실">
+                                            <option value="Tech2실">
+                                            <option value="Tech실">
+                                        </datalist>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="userTeam" class="form-label">팀 (Team)</label>
+                                        <input type="text" class="form-control" id="userTeam">
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="userRank" class="form-label">직급 (Rank)</label>
+                                        <select class="form-select" id="userRank">
+                                            <option value="매니저">매니저</option>
+                                            <option value="팀장">팀장</option>
+                                            <option value="팀장이상">팀장이상</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="userExpireDate" class="form-label fw-bold">사용 만료일</label>
+                                        <input type="date" class="form-control" id="userExpireDate">
+                                    </div>
+                                </div>
+
+                                <h5 class="mb-3 mt-4 text-secondary border-bottom pb-2">권한 정보 (Permission Info)</h5>
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="userLevel" class="form-label fw-bold">계정 등급 (Level)</label>
+                                        <select class="form-select" id="userLevel">
+                                            <option value="Content">Content</option>
+                                            <option value="Report">Report</option>
+                                            <option value="Master">Master</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="userGroup" class="form-label fw-bold">계정 그룹 (Group)</label>
+                                        <select class="form-select" id="userGroup">
+                                            <option value="PD">PD</option>
+                                            <option value="SO">SO</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-4">
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold">계정 상태 (Status)</label>
+                                        <select class="form-select" id="userStatus" disabled>
+                                            <option value="NORMAL">정상</option>
+                                            <option value="PENDING_SIGNUP">가입대기</option>
+                                            <option value="PENDING_DELETE">삭제대기</option>
+                                            <option value="SUSPENDED">중지</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex justify-content-end gap-2 border-top pt-3">
+                                    <button type="button" class="btn btn-light border px-4"
+                                        onclick="location.href='./user-list.html'">취소</button>
+                                    <button type="submit" class="btn btn-primary px-4 fw-bold">저장</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/common.js"></script>
+    <script>
+        // Mock Data (Same as list page for simulation)
+        const users = [
+            {
+                id: 'hong.kd', name: '홍길동', dept: 'Tech1실', team: '플랫폼개발팀', rank: '팀장',
+                status: 'NORMAL', level: 'Master', group: 'PD', expireDate: '2024-12-31',
+                email: 'hong.kd@company.com', phone: '010-1234-5678'
+            },
+            {
+                id: 'kim.cs', name: '김철수', dept: 'Tech2실', team: '서비스운영팀', rank: '매니저',
+                status: 'PENDING_SIGNUP', level: 'Content', group: 'SO', expireDate: '2024-06-30',
+                email: 'kim.cs@company.com', phone: '010-9876-5432'
+            },
+            {
+                id: 'lee.yh', name: '이영희', dept: 'Tech1실', team: '데이터분석팀', rank: '매니저',
+                status: 'PENDING_DELETE', level: 'Report', group: 'PD', expireDate: '2024-12-31',
+                email: 'lee.yh@company.com', phone: '010-5555-4444'
+            },
+            {
+                id: 'admin', name: '김관리', dept: 'CTO', team: '인프라팀', rank: '수석',
+                status: 'NORMAL', level: 'TopAdmin', group: 'SYSTEM', expireDate: '2099-12-31',
+                email: 'admin@company.com', phone: '010-1111-2222'
+            }
+        ];
+
+        // Current User Logic (Simulation) - Default to Admin to show features
+        let currentUser = {
+            id: 'admin',
+            level: 'TopAdmin'
+        };
+
+        const contextSelect = document.getElementById('userContextSelect');
+        contextSelect.addEventListener('change', (e) => {
+            const selectedId = e.target.value;
+            if (selectedId === 'admin') {
+                currentUser = { id: 'admin', level: 'TopAdmin' };
+            } else {
+                const user = users.find(u => u.id === selectedId);
+                if (user) {
+                    currentUser = { ...user };
+                }
+            }
+            updatePermissions();
+            updateAdminMenuVisibility(currentUser.level);
+            showToast(`User context switched to: ${currentUser.id === 'admin' ? 'Admin' : currentUser.name} (${currentUser.level})`);
+        });
+
+        function updatePermissions() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const targetUserId = urlParams.get('id');
+            const isSelf = currentUser.id === targetUserId;
+            const isTopAdmin = currentUser.level === 'TopAdmin';
+
+            // 1. Administrative Fields (Level, Group, Status)
+            // Only TopAdmin can edit these
+            const adminFields = ['userStatus', 'userLevel', 'userGroup'];
+            adminFields.forEach(fieldId => {
+                const element = document.getElementById(fieldId);
+                if (element) {
+                    element.disabled = !isTopAdmin;
+                }
+            });
+
+            // 2. Password Fields
+            // Only Self or TopAdmin can change password
+            // (Master cannot change others' passwords)
+            const passwordFields = ['userPassword', 'userPasswordConfirm'];
+            const canChangePassword = isSelf || isTopAdmin;
+
+            passwordFields.forEach(fieldId => {
+                const element = document.getElementById(fieldId);
+                if (element) {
+                    element.disabled = !canChangePassword;
+                    if (!canChangePassword) {
+                        element.placeholder = "권한이 없습니다 (Only Self or Admin)";
+                    } else {
+                        element.placeholder = "변경시에만 입력";
+                    }
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const userId = urlParams.get('id');
+
+            updatePermissions();
+
+            if (userId) {
+                const user = users.find(u => u.id === userId);
+                if (user) {
+                    document.getElementById('userId').value = user.id;
+                    document.getElementById('userName').value = user.name;
+                    document.getElementById('userDept').value = user.dept;
+                    document.getElementById('userTeam').value = user.team;
+                    document.getElementById('userRank').value = user.rank;
+                    document.getElementById('userExpireDate').value = user.expireDate;
+                    document.getElementById('userLevel').value = user.level;
+                    document.getElementById('userGroup').value = user.group;
+                    document.getElementById('userStatus').value = user.status;
+
+                    // New Fields
+                    document.getElementById('userEmail').value = user.email || '';
+                    document.getElementById('userPhone').value = user.phone || '';
+                } else {
+                    alert('사용자를 찾을 수 없습니다.');
+                    location.href = './user-list.html';
+                }
+            }
+        });
+
+        function handleSave() {
+            // In a real app, this would send an API request
+            const userName = document.getElementById('userName').value;
+            showToast(`'${userName}' 님의 정보가 저장되었습니다.`, 'success', () => {
+                location.href = './user-list.html';
+            });
+        }
+    </script>
+</body>
+
+</html>

@@ -115,13 +115,13 @@
             <span class="fs-6 text-uppercase text-muted fw-bold mb-3 px-3" style="font-size: 0.8rem;">System</span>
             <ul class="nav nav-pills flex-column">
                 <li>
-                    <a href="/users" class="nav-link" th:classappend="${menu == 'users'} ? 'active'">
+                    <a href="./user-list.html" class="nav-link">
                         <i class="bi bi-people-fill"></i>
                         사용자 관리
                     </a>
                 </li>
-                <li>
-                    <a href="/settings" class="nav-link" th:classappend="${menu == 'settings'} ? 'active'">
+                <li class="menu-admin-only">
+                    <a href="./settings.html" class="nav-link" th:classappend="${menu == 'settings'} ? 'active'">
                         <i class="bi bi-gear-fill"></i>
                         환경 설정
                     </a>

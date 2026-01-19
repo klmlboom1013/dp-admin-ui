@@ -43,8 +43,9 @@
             <hr class="text-secondary">
             <span class="sidebar-heading">System</span>
             <ul class="nav nav-pills flex-column">
-                <li><a href="#" class="nav-link"><i class="bi bi-people-fill"></i>사용자 관리</a></li>
-                <li><a href="#" class="nav-link"><i class="bi bi-gear-fill"></i>환경 설정</a></li>
+                <li><a href="./user-list.html" class="nav-link"><i class="bi bi-people-fill"></i>사용자 관리</a></li>
+                <li class="menu-admin-only"><a href="./settings.html" class="nav-link"><i class="bi bi-gear-fill"></i>환경
+                        설정</a></li>
             </ul>
         </div>
 
@@ -55,6 +56,62 @@
                 <a href="./agent-form.html" class="btn btn-primary">
                     <i class="bi bi-plus-lg"></i> 신규 Agent 등록
                 </a>
+            </div>
+
+            <!-- Advanced Search Filter -->
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-body bg-light">
+                    <form id="agentSearchForm" onsubmit="event.preventDefault(); filterAgents();">
+                        <div class="row mb-2">
+                            <div class="col-12">
+                                <label class="col-form-label fw-bold small text-uppercase text-secondary">Filter
+                                    by</label>
+                            </div>
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-md-3">
+                                <label for="searchId" class="form-label small fw-bold">Agent ID</label>
+                                <input type="text" class="form-control form-control-sm" id="searchId"
+                                    placeholder="ex) A-001">
+                            </div>
+                            <div class="col-md-3">
+                                <label for="searchName" class="form-label small fw-bold">Name</label>
+                                <input type="text" class="form-control form-control-sm" id="searchName"
+                                    placeholder="ex) Pay-WAS">
+                            </div>
+                            <div class="col-md-3">
+                                <label for="searchIp" class="form-label small fw-bold">IP Address</label>
+                                <input type="text" class="form-control form-control-sm" id="searchIp"
+                                    placeholder="part of IP">
+                            </div>
+                            <div class="col-md-3">
+                                <label for="searchStatus" class="form-label small fw-bold">Status</label>
+                                <select class="form-select form-select-sm" id="searchStatus">
+                                    <option value="">ALL</option>
+                                    <option value="RUNNING">RUNNING</option>
+                                    <option value="STOPPED">STOPPED</option>
+                                    <option value="STARTING">STARTING</option>
+                                    <option value="STOPPING">STOPPING</option>
+                                    <option value="UNKNOWN">UNKNOWN</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold">Last Update Range</label>
+                                <div class="input-group input-group-sm">
+                                    <input type="date" class="form-control" id="searchDateStart">
+                                    <span class="input-group-text">~</span>
+                                    <input type="date" class="form-control" id="searchDateEnd">
+                                </div>
+                            </div>
+                            <div class="col-md-6 d-flex align-items-end justify-content-end">
+                                <button type="button" class="btn btn-sm btn-secondary me-2" onclick="resetSearch()"><i
+                                        class="bi bi-arrow-counterclockwise me-1"></i>Reset</button>
+                                <button type="submit" class="btn btn-sm btn-primary px-4"><i
+                                        class="bi bi-search me-1"></i>Search</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
             </div>
 
             <div class="card shadow-sm border-0">
@@ -137,10 +194,10 @@
                                         onclick="deleteAgent(this)"><i class="bi bi-trash"></i></button>
                                 </td>
                             </tr>
-                            <tr data-status="DEPLOYING" data-server-type="PROD">
+                            <tr data-status="STOPPING" data-server-type="PROD">
                                 <td class="ps-4">
                                     <div class="form-check">
-                                        <input class="form-check-input row-checkbox" type="checkbox">
+                                        <input class="form-check-input row-checkbox" type="checkbox" disabled>
                                     </div>
                                 </td>
                                 <td class="fw-bold text-muted">A-003</td>
@@ -154,21 +211,19 @@
                                 </td>
                                 <td>10.20.30.42:8080</td>
                                 <td><span
-                                        class="badge bg-warning bg-opacity-10 text-warning border border-warning">DEPLOYING</span>
+                                        class="badge bg-danger bg-opacity-10 text-danger border border-danger">STOPPING</span>
                                 </td>
                                 <td>2024-01-19 09:30</td>
                                 <td class="text-end pe-4">
-                                    <a href="./agent-details.html?id=A-003&name=Order-API-01&ip=10.20.30.42&port=8080&serverType=PROD"
-                                        class="btn btn-sm btn-outline-info me-1" title="Console"><i
-                                            class="bi bi-terminal"></i></a>
-                                    <a href="./agent-form.html?id=A-003&name=Order-API-01&desc=Order Processing API&ip=10.20.30.42&port=8080&serverType=PROD"
-                                        class="btn btn-sm btn-outline-secondary me-1" title="Edit"><i
-                                            class="bi bi-pencil"></i></a>
+                                    <a href="#" class="btn btn-sm btn-outline-info me-1 disabled" title="Console"
+                                        aria-disabled="true"><i class="bi bi-terminal"></i></a>
+                                    <a href="#" class="btn btn-sm btn-outline-secondary me-1 disabled" title="Edit"
+                                        aria-disabled="true"><i class="bi bi-pencil"></i></a>
                                     <button class="btn btn-sm btn-outline-danger" title="Delete"
-                                        onclick="deleteAgent(this)"><i class="bi bi-trash"></i></button>
+                                        onclick="deleteAgent(this)" disabled><i class="bi bi-trash"></i></button>
                                 </td>
                             </tr>
-                            <tr data-status="RUNNING" data-server-type="DEV">
+                            <tr data-status="RUNNING" data-server-type="STG">
                                 <td class="ps-4">
                                     <div class="form-check">
                                         <input class="form-check-input row-checkbox" type="checkbox">
@@ -176,7 +231,11 @@
                                 </td>
                                 <td class="fw-bold text-muted">A-004</td>
                                 <td>
-                                    <div class="fw-bold">Pay-WAS-03</div>
+                                    <div class="fw-bold">
+                                        Pay-WAS-03
+                                        <span
+                                            class="badge bg-success bg-opacity-10 text-success border border-success ms-1">STG</span>
+                                    </div>
                                     <small class="text-muted">Payment Gateway Service</small>
                                 </td>
                                 <td>192.168.0.12:8080</td>
@@ -185,14 +244,43 @@
                                 </td>
                                 <td>2024-01-19 10:00</td>
                                 <td class="text-end pe-4">
-                                    <a href="./agent-details.html?id=A-004&name=Pay-WAS-03&ip=192.168.0.12&port=8080&serverType=DEV"
+                                    <a href="./agent-details.html?id=A-004&name=Pay-WAS-03&ip=192.168.0.12&port=8080&serverType=STG"
                                         class="btn btn-sm btn-outline-info me-1" title="Console"><i
                                             class="bi bi-terminal"></i></a>
-                                    <a href="./agent-form.html?id=A-004&name=Pay-WAS-03&desc=Payment Gateway Service&ip=192.168.0.12&port=8080"
+                                    <a href="./agent-form.html?id=A-004&name=Pay-WAS-03&desc=Payment Gateway Service&ip=192.168.0.12&port=8080&serverType=STG"
                                         class="btn btn-sm btn-outline-secondary me-1" title="Edit"><i
                                             class="bi bi-pencil"></i></a>
                                     <button class="btn btn-sm btn-outline-danger" title="Delete"
                                         onclick="deleteAgent(this)"><i class="bi bi-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr data-status="STARTING" data-server-type="PROD">
+                                <td class="ps-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input row-checkbox" type="checkbox" disabled>
+                                    </div>
+                                </td>
+                                <td class="fw-bold text-muted">A-005</td>
+                                <td>
+                                    <div class="fw-bold">
+                                        Order-API-02
+                                        <span
+                                            class="badge bg-primary bg-opacity-10 text-primary border border-primary ms-1">PROD</span>
+                                    </div>
+                                    <small class="text-muted">Order Processing API</small>
+                                </td>
+                                <td>10.20.30.43:8080</td>
+                                <td><span
+                                        class="badge bg-info bg-opacity-10 text-info border border-info">STARTING</span>
+                                </td>
+                                <td>2024-01-19 11:30</td>
+                                <td class="text-end pe-4">
+                                    <a href="#" class="btn btn-sm btn-outline-info me-1 disabled" title="Console"
+                                        aria-disabled="true"><i class="bi bi-terminal"></i></a>
+                                    <a href="#" class="btn btn-sm btn-outline-secondary me-1 disabled" title="Edit"
+                                        aria-disabled="true"><i class="bi bi-pencil"></i></a>
+                                    <button class="btn btn-sm btn-outline-danger" title="Delete"
+                                        onclick="deleteAgent(this)" disabled><i class="bi bi-trash"></i></button>
                                 </td>
                             </tr>
                             <tr data-status="STOPPED" data-server-type="PROD">
@@ -226,37 +314,7 @@
                                         onclick="deleteAgent(this)"><i class="bi bi-trash"></i></button>
                                 </td>
                             </tr>
-                            <tr data-status="DEPLOYING">
-                                <td class="ps-4">
-                                    <div class="form-check">
-                                        <input class="form-check-input row-checkbox" type="checkbox">
-                                    </div>
-                                </td>
-                                <td class="fw-bold text-muted">A-006</td>
-                                <td>
-                                    <div class="fw-bold">
-                                        Order-API-02
-                                        <span
-                                            class="badge bg-primary bg-opacity-10 text-primary border border-primary ms-1">PROD</span>
-                                    </div>
-                                    <small class="text-muted">Order Processing API</small>
-                                </td>
-                                <td>10.20.30.43:8080</td>
-                                <td><span
-                                        class="badge bg-warning bg-opacity-10 text-warning border border-warning">DEPLOYING</span>
-                                </td>
-                                <td>2024-01-19 10:30</td>
-                                <td class="text-end pe-4">
-                                    <a href="./agent-details.html?id=A-006&name=Order-API-02&ip=10.20.30.43&port=8080&serverType=PROD"
-                                        class="btn btn-sm btn-outline-info me-1" title="Console"><i
-                                            class="bi bi-terminal"></i></a>
-                                    <a href="./agent-form.html?id=A-006&name=Order-API-02&desc=Order Processing API&ip=10.20.30.43&port=8080&serverType=PROD"
-                                        class="btn btn-sm btn-outline-secondary me-1" title="Edit"><i
-                                            class="bi bi-pencil"></i></a>
-                                    <button class="btn btn-sm btn-outline-danger" title="Delete"
-                                        onclick="deleteAgent(this)"><i class="bi bi-trash"></i></button>
-                                </td>
-                            </tr>
+
                         </tbody>
                     </table>
                 </div>
@@ -341,6 +399,17 @@
                 if (e.target.closest('button') || e.target.closest('a')) return;
 
                 const checkbox = this.querySelector('.row-checkbox');
+
+                // Prevent selection for STARTING/STOPPING status
+                const currentStatus = this.dataset.status;
+                if (currentStatus === 'STARTING' || currentStatus === 'STOPPING') {
+                    // Prevent any interaction
+                    if (e.target === checkbox) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                    }
+                    return;
+                }
 
                 if (e.ctrlKey || e.metaKey || e.target.classList.contains('row-checkbox')) {
                     // Check same status constraint
@@ -559,6 +628,71 @@
                 showGlobalToast('에이전트가 삭제되었습니다.', 'warning');
                 // Update header count or other logic if needed
             });
+        }
+        // --- Search Filter Logic ---
+        function filterAgents() {
+            const idVal = document.getElementById('searchId').value.toUpperCase();
+            const nameVal = document.getElementById('searchName').value.toUpperCase();
+            const ipVal = document.getElementById('searchIp').value; // Case insensitive not usually needed for IP but strictly string match
+            const statusVal = document.getElementById('searchStatus').value;
+            const dateStartVal = document.getElementById('searchDateStart').value;
+            const dateEndVal = document.getElementById('searchDateEnd').value;
+
+            const rows = document.querySelectorAll('table tbody tr');
+
+            rows.forEach(row => {
+                // Cells: 0=Check, 1=ID, 2=Name, 3=IP, 4=Status, 5=Date
+                const idCell = row.cells[1].innerText.trim().toUpperCase();
+                const nameCell = row.cells[2].innerText.trim().toUpperCase(); // Includes badge text but generic match is ok
+                const ipCell = row.cells[3].innerText.trim();
+                // Status is better from dataset if available, or cell text
+                const statusCellText = row.cells[4].innerText.trim();
+                // Date format in cell: YYYY-MM-DD HH:MM
+                const dateCellText = row.cells[5].innerText.trim().substring(0, 10); // Extract YYYY-MM-DD
+
+                // 1. Check ID
+                if (idVal && !idCell.includes(idVal)) {
+                    row.style.display = 'none';
+                    return;
+                }
+                // 2. Check Name
+                if (nameVal && !nameCell.includes(nameVal)) {
+                    row.style.display = 'none';
+                    return;
+                }
+                // 3. Check IP
+                if (ipVal && !ipCell.includes(ipVal)) {
+                    row.style.display = 'none';
+                    return;
+                }
+                // 4. Check Status
+                if (statusVal && statusCellText !== statusVal) {
+                    row.style.display = 'none';
+                    return;
+                }
+                // 5. Check Date Range
+                if (dateStartVal || dateEndVal) {
+                    if (dateStartVal && dateCellText < dateStartVal) {
+                        row.style.display = 'none';
+                        return;
+                    }
+                    if (dateEndVal && dateCellText > dateEndVal) {
+                        row.style.display = 'none';
+                        return;
+                    }
+                }
+
+                // Match
+                row.style.display = '';
+            });
+
+            // Clear selections after filter to avoid actionable invisible items issues
+            clearSelection();
+        }
+
+        function resetSearch() {
+            document.getElementById('agentSearchForm').reset();
+            filterAgents();
         }
     </script>
 </body>

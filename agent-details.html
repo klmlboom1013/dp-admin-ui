@@ -44,8 +44,9 @@
             <hr class="text-secondary">
             <span class="sidebar-heading">System</span>
             <ul class="nav nav-pills flex-column">
-                <li><a href="#" class="nav-link"><i class="bi bi-people-fill"></i>사용자 관리</a></li>
-                <li><a href="#" class="nav-link"><i class="bi bi-gear-fill"></i>환경 설정</a></li>
+                <li><a href="./user-list.html" class="nav-link"><i class="bi bi-people-fill"></i>사용자 관리</a></li>
+                <li class="menu-admin-only"><a href="./settings.html" class="nav-link"><i class="bi bi-gear-fill"></i>환경
+                        설정</a></li>
             </ul>
         </div>
 
@@ -78,15 +79,15 @@
                                 <div class="col-md-6 border-end">
                                     <h6 class="text-muted text-uppercase mb-3 fw-bold small">Service Control</h6>
                                     <div class="d-flex gap-2">
-                                        <button onclick="sendCommand('START')"
+                                        <button onclick="handleAction('START')"
                                             class="btn btn-success btn-lg px-4 shadow-sm flex-fill">
                                             <i class="bi bi-play-fill"></i> 구동 (Start)
                                         </button>
-                                        <button onclick="confirmStop()"
+                                        <button onclick="handleAction('STOP')"
                                             class="btn btn-danger btn-lg px-4 shadow-sm flex-fill">
                                             <i class="bi bi-stop-fill"></i> 중지 (Stop)
                                         </button>
-                                        <button onclick="confirmRestart()"
+                                        <button onclick="handleAction('RESTART')"
                                             class="btn btn-warning btn-lg px-4 shadow-sm flex-fill">
                                             <i class="bi bi-arrow-clockwise"></i> 재기동
                                         </button>
@@ -235,16 +236,22 @@
             }
         }
 
-        function confirmStop() {
-            showConfirm('서비스를 중지하시겠습니까?\n운영 중인 서비스에 영향이 갈 수 있습니다.', () => {
-                sendCommand('STOP');
-            });
-        }
-
-        function confirmRestart() {
-            showConfirm('서비스를 재기동하시겠습니까?', () => {
-                sendCommand('RESTART');
-            });
+        function handleAction(action) {
+            if (serverType === 'PROD') {
+                showProdSafetyConfirm(action, [agentName], () => sendCommand(action));
+            } else {
+                if (action === 'START') {
+                    sendCommand('START');
+                } else if (action === 'STOP') {
+                    showConfirm('서비스를 중지하시겠습니까?\n운영 중인 서비스에 영향이 갈 수 있습니다.', () => {
+                        sendCommand('STOP');
+                    });
+                } else if (action === 'RESTART') {
+                    showConfirm('서비스를 재기동하시겠습니까?', () => {
+                        sendCommand('RESTART');
+                    });
+                }
+            }
         }
 
         function clearLog() {
