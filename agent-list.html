@@ -26,33 +26,14 @@
 
     <div class="d-flex">
         <!-- Sidebar -->
-        <div class="sidebar d-flex flex-column flex-shrink-0 p-3">
-            <span class="sidebar-heading">Monitoring</span>
-            <ul class="nav nav-pills flex-column">
-                <li><a href="./dashboard.html" class="nav-link"><i class="bi bi-speedometer2"></i>대시보드 (Dashboard)</a>
-                </li>
-            </ul>
-            <hr class="text-secondary">
-            <span class="sidebar-heading">Management</span>
-            <ul class="nav nav-pills flex-column mb-auto">
-                <li><a href="./agent-list.html" class="nav-link"><i class="bi bi-hdd-rack"></i>Agent 관리</a></li>
-                <li><a href="./agent-group-list.html" class="nav-link"><i class="bi bi-collection"></i>Agent 그룹 관리</a>
-                </li>
-                <li><a href="./history.html" class="nav-link"><i class="bi bi-clock-history"></i>배포/구동 이력</a></li>
-            </ul>
-            <hr class="text-secondary">
-            <span class="sidebar-heading">System</span>
-            <ul class="nav nav-pills flex-column">
-                <li><a href="./user-list.html" class="nav-link"><i class="bi bi-people-fill"></i>사용자 관리</a></li>
-                <li class="menu-admin-only"><a href="./settings.html" class="nav-link"><i class="bi bi-gear-fill"></i>환경
-                        설정</a></li>
-            </ul>
-        </div>
+        <!-- Sidebar -->
+        <div id="sidebar-container"></div>
+        <script src="js/sidebar.js"></script>
 
         <!-- Content Area -->
         <div class="content-area">
             <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
-                <h4><i class="bi bi-hdd-rack me-2"></i>Agent 관리</h4>
+                <h4><i class="bi bi-hdd-rack me-2"></i>Agents</h4>
                 <a href="./agent-form.html" class="btn btn-primary">
                     <i class="bi bi-plus-lg"></i> 신규 Agent 등록
                 </a>
@@ -69,11 +50,7 @@
                             </div>
                         </div>
                         <div class="row g-3">
-                            <div class="col-md-3">
-                                <label for="searchId" class="form-label small fw-bold">Agent ID</label>
-                                <input type="text" class="form-control form-control-sm" id="searchId"
-                                    placeholder="ex) A-001">
-                            </div>
+
                             <div class="col-md-3">
                                 <label for="searchName" class="form-label small fw-bold">Name</label>
                                 <input type="text" class="form-control form-control-sm" id="searchName"
@@ -124,7 +101,7 @@
                                         <input class="form-check-input" type="checkbox" id="selectAll" disabled>
                                     </div>
                                 </th>
-                                <th scope="col">ID</th>
+
                                 <th scope="col">Name</th>
                                 <th scope="col">IP Address</th>
                                 <th scope="col">Status</th>
@@ -139,7 +116,7 @@
                                         <input class="form-check-input row-checkbox" type="checkbox">
                                     </div>
                                 </td>
-                                <td class="fw-bold text-muted">A-001</td>
+
                                 <td>
                                     <div class="fw-bold">
                                         Pay-WAS-01
@@ -169,7 +146,7 @@
                                         <input class="form-check-input row-checkbox" type="checkbox">
                                     </div>
                                 </td>
-                                <td class="fw-bold text-muted">A-002</td>
+
                                 <td>
                                     <div class="fw-bold">
                                         Pay-WAS-02
@@ -200,7 +177,7 @@
                                         <input class="form-check-input row-checkbox" type="checkbox" disabled>
                                     </div>
                                 </td>
-                                <td class="fw-bold text-muted">A-003</td>
+
                                 <td>
                                     <div class="fw-bold">
                                         Order-API-01
@@ -229,7 +206,7 @@
                                         <input class="form-check-input row-checkbox" type="checkbox">
                                     </div>
                                 </td>
-                                <td class="fw-bold text-muted">A-004</td>
+
                                 <td>
                                     <div class="fw-bold">
                                         Pay-WAS-03
@@ -260,7 +237,7 @@
                                         <input class="form-check-input row-checkbox" type="checkbox" disabled>
                                     </div>
                                 </td>
-                                <td class="fw-bold text-muted">A-005</td>
+
                                 <td>
                                     <div class="fw-bold">
                                         Order-API-02
@@ -283,13 +260,13 @@
                                         onclick="deleteAgent(this)" disabled><i class="bi bi-trash"></i></button>
                                 </td>
                             </tr>
-                            <tr data-status="STOPPED" data-server-type="PROD">
+                            <tr data-status="RESTARTING" data-server-type="PROD">
                                 <td class="ps-4">
                                     <div class="form-check">
                                         <input class="form-check-input row-checkbox" type="checkbox">
                                     </div>
                                 </td>
-                                <td class="fw-bold text-muted">A-005</td>
+
                                 <td>
                                     <div class="fw-bold">
                                         Pay-WAS-04
@@ -300,14 +277,14 @@
                                 </td>
                                 <td>192.168.0.13:8080</td>
                                 <td><span
-                                        class="badge bg-danger bg-opacity-10 text-danger border border-danger">STOPPED</span>
+                                        class="badge bg-warning bg-opacity-10 text-warning border border-warning">RESTARTING</span>
                                 </td>
                                 <td>2024-01-19 10:05</td>
                                 <td class="text-end pe-4">
-                                    <a href="./agent-details.html?id=A-005&name=Pay-WAS-04&ip=192.168.0.13&port=8080&serverType=PROD"
+                                    <a href="./agent-details.html?id=A-006&name=Pay-WAS-04&ip=192.168.0.13&port=8080&serverType=PROD"
                                         class="btn btn-sm btn-outline-info me-1" title="Console"><i
                                             class="bi bi-terminal"></i></a>
-                                    <a href="./agent-form.html?id=A-005&name=Pay-WAS-04&desc=Payment Gateway Service&ip=192.168.0.13&port=8080&serverType=PROD"
+                                    <a href="./agent-form.html?id=A-006&name=Pay-WAS-04&desc=Payment Gateway Service&ip=192.168.0.13&port=8080&serverType=PROD"
                                         class="btn btn-sm btn-outline-secondary me-1" title="Edit"><i
                                             class="bi bi-pencil"></i></a>
                                     <button class="btn btn-sm btn-outline-danger" title="Delete"

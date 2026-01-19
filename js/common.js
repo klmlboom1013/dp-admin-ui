@@ -3,23 +3,7 @@
  */
 
 // 현재 페이지 URL을 기반으로 사이드바 메뉴 활성화
-document.addEventListener("DOMContentLoaded", function () {
-    const currentPath = window.location.pathname;
-    // 파일명만 추출 (예: /agent-list.html -> agent-list.html)
-    const pageName = currentPath.substring(currentPath.lastIndexOf('/') + 1);
-
-    const navLinks = document.querySelectorAll('.sidebar .nav-link');
-
-    navLinks.forEach(link => {
-        const href = link.getAttribute('href');
-        // href가 ./로 시작하는 경우 처리
-        const linkPageName = href.substring(href.lastIndexOf('/') + 1);
-
-        if (pageName === linkPageName || (pageName === '' && linkPageName === 'dashboard.html')) {
-            link.classList.add('active');
-        }
-    });
-});
+// Sidebar highlighting logic moved to js/sidebar.js
 
 // 간단한 알림 모달 출력 함수
 function showToast(message, type = 'info', callback = null) {
@@ -267,7 +251,7 @@ function updateAdminMenuVisibility(level) {
     items.forEach(item => {
         if (level === 'TopAdmin') {
             // Remove inline style to revert to CSS default (usually visible)
-            item.style.display = ''; 
+            item.style.display = '';
         } else {
             item.style.display = 'none';
         }

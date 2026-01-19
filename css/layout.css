@@ -99,7 +99,10 @@ body {
     background-color: #dc3545;
 }
 
-.bg-deploying {
+.bg-deploying,
+.bg-starting,
+.bg-stopping,
+.bg-restarting {
     background-color: #ffc107;
     animation: blink 1s infinite;
 }

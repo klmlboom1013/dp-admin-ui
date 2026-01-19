@@ -67,67 +67,9 @@
 
     <div class="d-flex">
 
-        <div class="sidebar d-flex flex-column flex-shrink-0 p-3">
-            <span class="fs-6 text-uppercase text-muted fw-bold mb-3 px-3 mt-2"
-                style="font-size: 0.8rem;">Monitoring</span>
-
-            <ul class="nav nav-pills flex-column">
-                <li class="nav-item">
-                    <a href="./dashboard.html" class="nav-link" th:classappend="${menu == 'dashboard'} ? 'active'">
-                        <i class="bi bi-speedometer2"></i>
-                        대시보드 (Dashboard)
-                    </a>
-                </li>
-                <li>
-                    <a href="/monitoring" class="nav-link" th:classappend="${menu == 'monitoring'} ? 'active'">
-                        <i class="bi bi-activity"></i>
-                        실시간 모니터링
-                    </a>
-                </li>
-            </ul>
-
-            <hr class="text-secondary">
-
-            <span class="fs-6 text-uppercase text-muted fw-bold mb-3 px-3" style="font-size: 0.8rem;">Management</span>
-            <ul class="nav nav-pills flex-column mb-auto">
-                <li>
-                    <a href="/agents" class="nav-link" th:classappend="${menu == 'agents'} ? 'active'">
-                        <i class="bi bi-hdd-rack"></i>
-                        Agent 관리
-                    </a>
-                </li>
-                <li>
-                    <a href="/agents/new" class="nav-link" th:classappend="${menu == 'agent-add'} ? 'active'">
-                        <i class="bi bi-plus-circle-dotted"></i>
-                        Agent 등록
-                    </a>
-                </li>
-                <li>
-                    <a href="/history" class="nav-link" th:classappend="${menu == 'history'} ? 'active'">
-                        <i class="bi bi-clock-history"></i>
-                        배포/구동 이력
-                    </a>
-                </li>
-            </ul>
-
-            <hr class="text-secondary">
-
-            <span class="fs-6 text-uppercase text-muted fw-bold mb-3 px-3" style="font-size: 0.8rem;">System</span>
-            <ul class="nav nav-pills flex-column">
-                <li>
-                    <a href="./user-list.html" class="nav-link">
-                        <i class="bi bi-people-fill"></i>
-                        사용자 관리
-                    </a>
-                </li>
-                <li class="menu-admin-only">
-                    <a href="./settings.html" class="nav-link" th:classappend="${menu == 'settings'} ? 'active'">
-                        <i class="bi bi-gear-fill"></i>
-                        환경 설정
-                    </a>
-                </li>
-            </ul>
-        </div>
+        <!-- Sidebar -->
+        <div id="sidebar-container"></div>
+        <script src="js/sidebar.js"></script>
 
         <div class="content-area">
             <div class="card shadow-sm">

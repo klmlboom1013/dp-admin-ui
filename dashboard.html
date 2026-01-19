@@ -28,79 +28,13 @@
     <div class="d-flex">
 
         <!-- Sidebar -->
-        <div class="sidebar d-flex flex-column flex-shrink-0 p-3">
-            <span class="sidebar-heading">Monitoring</span>
-            <ul class="nav nav-pills flex-column">
-                <li class="nav-item">
-                    <a href="./dashboard.html" class="nav-link">
-                        <i class="bi bi-speedometer2"></i>
-                        대시보드 (Dashboard)
-                    </a>
-                </li>
-                <!--
-            <li>
-                <a href="./monitoring.html" class="nav-link">
-                    <i class="bi bi-activity"></i>
-                    실시간 모니터링
-                </a>
-            </li>
-            -->
-            </ul>
-
-            <hr class="text-secondary">
-
-            <span class="sidebar-heading">Management</span>
-            <ul class="nav nav-pills flex-column mb-auto">
-                <li>
-                    <a href="./agent-list.html" class="nav-link">
-                        <i class="bi bi-hdd-rack"></i>
-                        Agent 관리
-                    </a>
-                </li>
-                <li>
-                    <a href="./agent-group-list.html" class="nav-link">
-                        <i class="bi bi-collection"></i>
-                        Agent 그룹 관리
-                    </a>
-                </li>
-                <!--
-            <li>
-                <a href="./agent-form.html" class="nav-link">
-                    <i class="bi bi-plus-circle-dotted"></i>
-                    Agent 등록
-                </a>
-            </li>
-            -->
-                <li>
-                    <a href="./history.html" class="nav-link">
-                        <i class="bi bi-clock-history"></i>
-                        배포/구동 이력
-                    </a>
-                </li>
-            </ul>
-
-            <hr class="text-secondary">
-
-            <span class="sidebar-heading">System</span>
-            <ul class="nav nav-pills flex-column">
-                <li>
-                    <a href="./user-list.html" class="nav-link">
-                        <i class="bi bi-people-fill"></i>
-                        사용자 관리
-                    </a>
-                </li>
-                <li class="menu-admin-only">
-                    <a href="./settings.html" class="nav-link">
-                        <i class="bi bi-gear-fill"></i>
-                        환경 설정
-                    </a>
-                </li>
-            </ul>
-        </div>
+        <!-- Sidebar -->
+        <div id="sidebar-container"></div>
+        <script src="js/sidebar.js"></script>
 
         <!-- Content Area -->
         <div class="content-area">
-            <h4 class="mb-4 pb-2 border-bottom">📂 전체 서비스 현황</h4>
+            <h4 class="mb-4 pb-2 border-bottom"><i class="bi bi-speedometer2 me-2"></i>Dashboard</h4>
 
             <!-- Summary Cards -->
             <div class="row mb-4">
@@ -131,7 +65,7 @@
                 <div class="col-md-3">
                     <div class="card text-white bg-warning mb-3 shadow-sm">
                         <div class="card-body">
-                            <h5 class="card-title">Deploying</h5>
+                            <h5 class="card-title">Starting</h5>
                             <p class="card-text fs-2">1</p>
                         </div>
                     </div>
@@ -183,15 +117,15 @@
                     </div>
                 </div>
 
-                <!-- Agent 3 (Deploying) -->
+                <!-- Agent 3 (Starting) -->
                 <div class="col-md-4 mb-4">
                     <div class="card card-hover h-100 border-0 shadow-sm">
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <h5 class="card-title fw-bold">Order-API-01</h5>
                                 <span class="badge rounded-pill bg-light text-dark border">
-                                    <span class="status-dot bg-deploying"></span>
-                                    <span>DEPLOYING...</span>
+                                    <span class="status-dot bg-starting"></span>
+                                    <span>STARTING...</span>
                                 </span>
                             </div>
                             <p class="text-muted small mb-1">IP: 10.20.30.42</p>
@@ -201,7 +135,7 @@
                                 <button class="btn btn-primary btn-sm" disabled>
                                     <span class="spinner-border spinner-border-sm" role="status"
                                         aria-hidden="true"></span>
-                                    배포 진행중...
+                                    시작 중...
                                 </button>
                             </div>
                         </div>

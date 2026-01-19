@@ -26,36 +26,16 @@
 
     <div class="d-flex">
         <!-- Sidebar -->
-        <div class="sidebar d-flex flex-column flex-shrink-0 p-3">
-            <span class="sidebar-heading">Monitoring</span>
-            <ul class="nav nav-pills flex-column">
-                <li><a href="./dashboard.html" class="nav-link"><i class="bi bi-speedometer2"></i>대시보드 (Dashboard)</a>
-                </li>
-            </ul>
-            <hr class="text-secondary">
-            <span class="sidebar-heading">Management</span>
-            <ul class="nav nav-pills flex-column mb-auto">
-                <!-- agent-list와 동일한 메뉴 활성화를 위해 href 주의 -->
-                <li><a href="./agent-list.html" class="nav-link"><i class="bi bi-hdd-rack"></i>Agent 관리</a></li>
-                <li><a href="./agent-group-list.html" class="nav-link"><i class="bi bi-collection"></i>Agent 그룹 관리</a>
-                </li>
-                <li><a href="./history.html" class="nav-link"><i class="bi bi-clock-history"></i>배포/구동 이력</a></li>
-            </ul>
-            <hr class="text-secondary">
-            <span class="sidebar-heading">System</span>
-            <ul class="nav nav-pills flex-column">
-                <li><a href="./user-list.html" class="nav-link"><i class="bi bi-people-fill"></i>사용자 관리</a></li>
-                <li class="menu-admin-only"><a href="./settings.html" class="nav-link"><i class="bi bi-gear-fill"></i>환경
-                        설정</a></li>
-            </ul>
-        </div>
+        <!-- Sidebar -->
+        <div id="sidebar-container"></div>
+        <script src="js/sidebar.js"></script>
 
         <!-- Content Area -->
         <div class="content-area">
             <div class="mb-4 pb-2 border-bottom d-flex align-items-center">
                 <a href="./agent-list.html" id="btnBack" class="text-decoration-none text-muted me-3 fs-5"
                     title="Go Back"><i class="bi bi-arrow-left"></i></a>
-                <h4 class="mb-0">Agent 등록/수정</h4>
+                <h4 class="mb-0">Agent Registration</h4>
             </div>
 
             <div class="row justify-content-center">

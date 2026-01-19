@@ -36,33 +36,14 @@
 
     <div class="d-flex">
         <!-- Sidebar -->
-        <div class="sidebar d-flex flex-column flex-shrink-0 p-3">
-            <span class="sidebar-heading">Monitoring</span>
-            <ul class="nav nav-pills flex-column">
-                <li><a href="./dashboard.html" class="nav-link"><i class="bi bi-speedometer2"></i>대시보드 (Dashboard)</a>
-                </li>
-            </ul>
-            <hr class="text-secondary">
-            <span class="sidebar-heading">Management</span>
-            <ul class="nav nav-pills flex-column mb-auto">
-                <li><a href="./agent-list.html" class="nav-link"><i class="bi bi-hdd-rack"></i>Agent 관리</a></li>
-                <li><a href="./agent-group-list.html" class="nav-link active"><i class="bi bi-collection"></i>Agent 그룹
-                        관리</a></li>
-                <li><a href="./history.html" class="nav-link"><i class="bi bi-clock-history"></i>배포/구동 이력</a></li>
-            </ul>
-            <hr class="text-secondary">
-            <span class="sidebar-heading">System</span>
-            <ul class="nav nav-pills flex-column">
-                <li><a href="./user-list.html" class="nav-link"><i class="bi bi-people-fill"></i>사용자 관리</a></li>
-                <li class="menu-admin-only"><a href="./settings.html" class="nav-link"><i class="bi bi-gear-fill"></i>환경
-                        설정</a></li>
-            </ul>
-        </div>
+        <!-- Sidebar -->
+        <div id="sidebar-container"></div>
+        <script src="js/sidebar.js"></script>
 
         <!-- Content Area -->
         <div class="content-area">
             <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
-                <h4><i class="bi bi-collection me-2"></i>Agent 그룹 상세</h4>
+                <h4><i class="bi bi-collection me-2"></i>Agent Group Details</h4>
                 <a href="./agent-group-list.html" class="btn btn-outline-secondary">
                     <i class="bi bi-arrow-left"></i> 목록으로
                 </a>
