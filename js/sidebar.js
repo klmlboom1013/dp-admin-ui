@@ -103,7 +103,33 @@ function loadSidebar() {
 }
 
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', loadSidebar);
+    document.addEventListener('DOMContentLoaded', () => {
+        loadSidebar();
+        // Initial check after load
+        updateSidebarVisibility();
+    });
 } else {
     loadSidebar();
+    updateSidebarVisibility();
+}
+
+// Global Context Listener
+document.addEventListener('userContextChanged', () => {
+    updateSidebarVisibility();
+});
+
+function updateSidebarVisibility() {
+    // Ensure currentUser is available (from common.js/header.js)
+    if (typeof currentUser === 'undefined') return;
+
+    const isAdmin = currentUser.level === 'Admin';
+    const adminMenus = document.querySelectorAll('.menu-admin-only');
+
+    adminMenus.forEach(el => {
+        if (isAdmin) {
+            el.classList.remove('d-none');
+        } else {
+            el.classList.add('d-none');
+        }
+    });
 }

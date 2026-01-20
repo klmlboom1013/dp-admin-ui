@@ -27,15 +27,64 @@
                 <h4><i class="bi bi-people-fill me-2"></i>Members</h4>
 
                 <!-- Permission Simulation Control -->
-                <div class="d-flex align-items-center bg-white p-2 border rounded shadow-sm">
-                    <span class="me-2 small fw-bold text-muted"><i class="bi bi-person-badge"></i> Current User
-                        Context:</span>
-                    <select class="form-select form-select-sm" style="width: 200px;" id="userContextSelect">
-                        <option value="admin">System Admin (Super)</option>
-                        <option value="hong.kd">홍길동 (Master/PD)</option>
-                        <option value="kim.cs">김철수 (Content/SO)</option>
-                        <option value="lee.yh">이영희 (Report/PD)</option>
-                    </select>
+                <!-- Global Simulator used in Header -->
+            </div>
+
+            <!-- Filter Card -->
+            <div class="card shadow-sm border-0 mb-4" id="filterCard" style="display: none;">
+                <div class="card-body bg-light">
+                    <form id="userFilterForm" onsubmit="event.preventDefault(); renderTable();">
+                        <div class="row mb-2">
+                            <div class="col-12">
+                                <label class="col-form-label fw-bold small text-uppercase text-secondary">Filter
+                                    by</label>
+                            </div>
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label for="searchName" class="form-label small fw-bold">Name</label>
+                                <input type="text" class="form-control form-control-sm" id="searchName"
+                                    placeholder="ex) 홍길동">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="searchStatus" class="form-label small fw-bold">Status</label>
+                                <select class="form-select form-select-sm" id="searchStatus">
+                                    <option value="">ALL</option>
+                                    <option value="NORMAL">NORMAL</option>
+                                    <option value="PENDING_SIGNUP">PENDING_SIGNUP</option>
+                                    <option value="PENDING_DELETE">PENDING_DELETE</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4" id="filterLevelContainer" style="display: none;">
+                                <label for="searchLevel" class="form-label small fw-bold">Level (Admin Only)</label>
+                                <select class="form-select form-select-sm" id="searchLevel">
+                                    <option value="">ALL</option>
+                                    <option value="Admin">Admin</option>
+                                    <option value="Master">Master</option>
+                                    <option value="Content">Content</option>
+                                    <option value="Report">Report</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4" id="filterGroupContainer" style="display: none;">
+                                <label for="searchGroup" class="form-label small fw-bold">Group (Admin Only)</label>
+                                <select class="form-select form-select-sm" id="searchGroup">
+                                    <option value="">ALL</option>
+                                    <option value="PD">PD</option>
+                                    <option value="SO">SO</option>
+                                    <option value="OP">OP</option>
+                                    <option value="QA">QA</option>
+                                    <option value="Common">Common</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-4 d-flex align-items-end justify-content-end ms-auto">
+                                <button type="button" class="btn btn-sm btn-secondary me-2" onclick="resetFilter()"><i
+                                        class="bi bi-arrow-counterclockwise me-1"></i>Reset</button>
+                                <button type="submit" class="btn btn-sm btn-primary px-4"><i
+                                        class="bi bi-search me-1"></i>Search</button>
+                            </div>
+                        </div>
+                    </form>
                 </div>
             </div>
 
@@ -92,28 +141,14 @@
             }
         ];
 
-        // Current User Logic (Simulation)
-        let currentUser = {
-            id: 'admin',
-            level: 'Admin', // System Admin
-            group: 'SYSTEM'
-        };
-
-        const contextSelect = document.getElementById('userContextSelect');
-        contextSelect.addEventListener('change', (e) => {
-            const selectedId = e.target.value;
-            if (selectedId === 'admin') {
-                currentUser = { id: 'admin', level: 'Admin', group: 'SYSTEM' };
-            } else {
-                // Find user from mock data
-                const user = users.find(u => u.id === selectedId);
-                if (user) {
-                    currentUser = { ...user };
-                }
-            }
+        // Current User Logic (Handled by Global Header Simulator)
+        // Listen for context change
+        document.addEventListener('userContextChanged', (e) => {
+            // currentUser is already updated in window object by header.js
+            // But we can also use e.detail if needed
             renderTable();
             updateAdminMenuVisibility(currentUser.level); // Update Menu
-            showToast(`User context switched to: ${currentUser.id === 'admin' ? 'Admin' : currentUser.name}`);
+            showToast(`[Page] View updated for: ${currentUser.level}`);
         });
 
         // Permission Check Function
@@ -131,6 +166,22 @@
 
             // 4. Content/Report: Self Only (Already covered by check #2)
             return false;
+        }
+
+        // Self Status Action Handler (Cancel Delete)
+        function handleSelfStatusAction(userId, actionType) {
+            if (userId !== currentUser.id) return;
+
+            if (actionType === 'CANCEL_DELETE') {
+                showConfirm('삭제 요청을 취소하시겠습니까?<br><span class="text-success small">(상태가 [정상]으로 변경됩니다)</span>', function () {
+                    const user = users.find(u => u.id === userId);
+                    if (user) {
+                        user.status = 'NORMAL';
+                        renderTable();
+                        showToast('삭제 요청이 취소되었습니다.', 'success');
+                    }
+                });
+            }
         }
 
         // Admin Status Action Handler
@@ -161,15 +212,25 @@
             if (userIndex === -1) return;
             const user = users[userIndex];
 
+            // 1. PENDING_SIGNUP: Immediate Cancel/Delete (Regardless of role, if button is clickable)
+            if (user.status === 'PENDING_SIGNUP') {
+                showConfirm('가입 요청을 취소하시겠습니까?<br><span class="text-danger small">(정보가 영구 삭제됩니다)</span>', function () {
+                    users.splice(userIndex, 1);
+                    renderTable();
+                    showToast('가입 요청이 취소되었습니다.', 'success');
+                });
+                return;
+            }
+
+            // 2. Admin: Immediate Delete
             if (currentUser.level === 'Admin') {
-                // Admin: Immediate Delete
                 showConfirm(`[관리자] '${user.name}' 계정을 영구히 삭제하시겠습니까?`, function () {
                     users.splice(userIndex, 1);
                     renderTable();
                     showToast('계정이 삭제되었습니다.', 'success');
                 });
             } else {
-                // Non-Admin: Request Delete
+                // 3. Non-Admin: Request Delete
                 showConfirm('계정 삭제를 관리자에게 요청하시겠습니까?<br><span class="text-danger small">(상태가 [삭제대기]로 변경됩니다)</span>', function () {
                     user.status = 'PENDING_DELETE';
                     renderTable();
@@ -178,11 +239,52 @@
             }
         }
 
+        // Initialize Filter Visibility based on Permissions
+        function applyFilterVisibility() {
+            const filterCard = document.getElementById('filterCard');
+            const filterLevelContainer = document.getElementById('filterLevelContainer');
+            const filterGroupContainer = document.getElementById('filterGroupContainer');
+
+            if (!filterCard || !filterLevelContainer || !filterGroupContainer) return;
+
+            // Default: Hide all
+            filterCard.style.display = 'none';
+            filterLevelContainer.style.display = 'none';
+            filterGroupContainer.style.display = 'none';
+
+            if (currentUser.level === 'Admin') {
+                // Admin: Show All
+                filterCard.style.display = 'block';
+                filterLevelContainer.style.display = 'block';
+                filterGroupContainer.style.display = 'block';
+            } else if (currentUser.level === 'Master') {
+                // Master: Show Name/Status only (Hide Level/Group)
+                filterCard.style.display = 'block';
+                filterLevelContainer.style.display = 'none';
+                filterGroupContainer.style.display = 'none';
+            } else {
+                // Content/Report: Hide Filter Card
+                filterCard.style.display = 'none';
+            }
+        }
+
+        function resetFilter() {
+            const inputs = ['searchName', 'searchStatus', 'searchLevel', 'searchGroup'];
+            inputs.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.value = '';
+            });
+            renderTable();
+        }
+
         function renderTable() {
+            // Apply UI Visibility Logic
+            applyFilterVisibility();
+
             const tbody = document.querySelector('#userTable tbody');
             tbody.innerHTML = '';
 
-            // Filter Logic
+            // 1. Permission Logic (Data Scope)
             let displayUsers = users;
             if (currentUser.level === 'Content' || currentUser.level === 'Report') {
                 // Content/Report: Show ONLY Self
@@ -192,6 +294,26 @@
                 displayUsers = users.filter(u => u.group === currentUser.group);
             }
 
+            // 2. Filter Logic (Search Inputs)
+            const searchName = document.getElementById('searchName')?.value.trim().toLowerCase() || '';
+            const searchStatus = document.getElementById('searchStatus')?.value || '';
+            const searchLevel = document.getElementById('searchLevel')?.value || '';
+            const searchGroup = document.getElementById('searchGroup')?.value || '';
+
+            // Only apply filters if the user has permission to see the filter UI
+            // (or implicitly if values are set)
+            displayUsers = displayUsers.filter(user => {
+                const matchName = user.name.toLowerCase().includes(searchName) || user.id.toLowerCase().includes(searchName);
+                const matchStatus = searchStatus === '' || user.status === searchStatus;
+
+                // Level/Group filter only applies if visible (Admin)
+                // However, if the element is hidden, its value is '', so it works automatically as 'ALL'
+                const matchLevel = searchLevel === '' || user.level === searchLevel;
+                const matchGroup = searchGroup === '' || user.group === searchGroup;
+
+                return matchName && matchStatus && matchLevel && matchGroup;
+            });
+
             displayUsers.forEach(user => {
                 const tr = document.createElement('tr');
 
@@ -199,24 +321,33 @@
                 let statusBadge = '';
                 let statusAction = '';
                 let cursorStyle = '';
+                let title = '';
 
-                // Admin & Actionable User Status
-                if (currentUser.level === 'TopAdmin') {
+                // 1. Self Action (Cancel Delete Request) - Priority
+                if (currentUser.id === user.id && user.status === 'PENDING_DELETE') {
+                    statusAction = `onclick="handleSelfStatusAction('${user.id}', 'CANCEL_DELETE')"`;
+                    cursorStyle = 'cursor: pointer;';
+                    title = '클릭하여 삭제 요청 취소';
+                }
+                // 2. Admin Action (Approve Signup / Confirm Delete)
+                else if (currentUser.level === 'Admin') {
                     if (user.status === 'PENDING_SIGNUP') {
                         statusAction = `onclick="handleStatusAction('${user.id}', 'PENDING_SIGNUP')"`;
                         cursorStyle = 'cursor: pointer;';
+                        title = '클릭하여 가입 승인';
                     } else if (user.status === 'PENDING_DELETE') {
                         statusAction = `onclick="handleStatusAction('${user.id}', 'PENDING_DELETE')"`;
                         cursorStyle = 'cursor: pointer;';
+                        title = '클릭하여 계정 삭제';
                     }
                 }
 
                 if (user.status === 'NORMAL') {
                     statusBadge = '<span class="badge bg-success">정상</span>';
                 } else if (user.status === 'PENDING_SIGNUP') {
-                    statusBadge = `<span class="badge bg-warning text-dark shadow-sm" style="${cursorStyle}" ${statusAction} title="${currentUser.level === 'TopAdmin' ? '클릭하여 가입 승인' : ''}">가입대기</span>`;
+                    statusBadge = `<span class="badge bg-warning text-dark shadow-sm" style="${cursorStyle}" ${statusAction} title="${title}">가입대기</span>`;
                 } else if (user.status === 'PENDING_DELETE') {
-                    statusBadge = `<span class="badge bg-danger shadow-sm" style="${cursorStyle}" ${statusAction} title="${currentUser.level === 'TopAdmin' ? '클릭하여 계정 삭제' : ''}">삭제대기</span>`;
+                    statusBadge = `<span class="badge bg-danger shadow-sm" style="${cursorStyle}" ${statusAction} title="${title}">삭제대기</span>`;
                 }
 
                 // Level Badge Logic
@@ -231,7 +362,16 @@
                 // Permission Check
                 const isActionAllowed = canEditOrDelete(user);
                 const btnState = isActionAllowed ? '' : 'disabled style="opacity: 0.3; cursor: not-allowed;"';
-                const btnClass = isActionAllowed ? '' : 'disabled'; // Bootstrap disabled class
+
+                // Edit Button Visibility (Hide for PENDING_SIGNUP)
+                let editButtonHtml = `
+                        <button class="btn btn-sm btn-outline-secondary me-1" ${btnState} onclick="location.href='./user-form.html?id=${user.id}'">
+                            <i class="bi bi-pencil"></i>
+                        </button>`;
+
+                if (user.status === 'PENDING_SIGNUP') {
+                    editButtonHtml = '';
+                }
 
                 tr.innerHTML = `
                     <td class="ps-4">
@@ -248,9 +388,7 @@
                     <td><span class="badge ${groupClass}">${user.group}</span></td>
                     <td>${user.expireDate}</td>
                     <td class="text-end pe-4">
-                        <button class="btn btn-sm btn-outline-secondary me-1" ${btnState} onclick="location.href='./user-form.html?id=${user.id}'">
-                            <i class="bi bi-pencil"></i>
-                        </button>
+                        ${editButtonHtml}
                         <button class="btn btn-sm btn-outline-danger" ${btnState} onclick="handleDeleteClick('${user.id}')">
                             <i class="bi bi-trash"></i>
                         </button>

@@ -36,13 +36,22 @@
                             </div>
                         </div>
                         <div class="row g-3">
-                            <div class="col-md-2">
+                            <div class="col-md-4">
                                 <label for="filterAgent" class="form-label small fw-bold">Agent Name</label>
                                 <input type="text" class="form-control form-control-sm" id="filterAgent"
                                     placeholder="ex) Pay-WAS">
                             </div>
-                            <div class="col-md-2" id="groupFilterContainer" style="display: none;">
-                                <label for="filterGroup" class="form-label small fw-bold">Group</label>
+                            <div class="col-md-4">
+                                <label for="filterServerType" class="form-label small fw-bold">Server Type</label>
+                                <select class="form-select form-select-sm" id="filterServerType">
+                                    <option value="">ALL</option>
+                                    <option value="DEV">DEV</option>
+                                    <option value="STG">STG</option>
+                                    <option value="PROD">PROD</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4" id="groupFilterContainer" style="display: none;">
+                                <label for="filterGroup" class="form-label small fw-bold">Group (Admin Only)</label>
                                 <select class="form-select form-select-sm" id="filterGroup">
                                     <option value="">ALL</option>
                                     <option value="PD">PD</option>
@@ -52,17 +61,17 @@
                                     <option value="COMMON">Common</option>
                                 </select>
                             </div>
-                            <div class="col-md-2">
+                            <div class="col-md-4">
                                 <label for="filterIp" class="form-label small fw-bold">IP Address</label>
                                 <input type="text" class="form-control form-control-sm" id="filterIp"
                                     placeholder="part of IP">
                             </div>
-                            <div class="col-md-2">
+                            <div class="col-md-4">
                                 <label for="filterUser" class="form-label small fw-bold">User Name</label>
                                 <input type="text" class="form-control form-control-sm" id="filterUser"
                                     placeholder="User Name">
                             </div>
-                            <div class="col-md-2">
+                            <div class="col-md-4">
                                 <label for="filterType" class="form-label small fw-bold">Action</label>
                                 <select class="form-select form-select-sm" id="filterType">
                                     <option value="">ALL</option>
@@ -71,7 +80,7 @@
                                     <option value="RESTART">RESTART</option>
                                 </select>
                             </div>
-                            <div class="col-md-2">
+                            <div class="col-md-4">
                                 <label for="filterResult" class="form-label small fw-bold">Result</label>
                                 <select class="form-select form-select-sm" id="filterResult">
                                     <option value="">ALL</option>
@@ -81,7 +90,7 @@
                                 </select>
                             </div>
 
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <label class="form-label small fw-bold">Time Range</label>
                                 <div class="input-group input-group-sm">
                                     <input type="date" class="form-control" id="filterStartDate">
@@ -89,7 +98,7 @@
                                     <input type="date" class="form-control" id="filterEndDate">
                                 </div>
                             </div>
-                            <div class="col-md-6 d-flex align-items-end justify-content-end">
+                            <div class="col-md-4 d-flex align-items-end justify-content-end">
                                 <button type="button" class="btn btn-sm btn-secondary me-2"
                                     onclick="resetHistoryFilter()"><i
                                         class="bi bi-arrow-counterclockwise me-1"></i>Reset</button>
@@ -119,7 +128,8 @@
                         </thead>
                         <tbody>
                             <tr>
-                                <td class="ps-4 fw-bold">Pay-WAS-01</td>
+                                <td class="ps-4 fw-bold">Pay-WAS-01 <span
+                                        class="badge bg-light text-secondary border ms-1">DEV</span></td>
                                 <td><span class="badge rounded-pill text-bg-secondary bg-opacity-75">PD</span></td>
                                 <td>192.168.0.10:8080</td>
                                 <td><span
@@ -134,7 +144,9 @@
                                         Log</button></td>
                             </tr>
                             <tr>
-                                <td class="ps-4 fw-bold">Order-API-01</td>
+                                <td class="ps-4 fw-bold">Order-API-01 <span
+                                        class="badge bg-primary bg-opacity-10 text-primary border border-primary ms-1">PROD</span>
+                                </td>
                                 <td><span class="badge rounded-pill text-bg-secondary bg-opacity-75">SO</span></td>
                                 <td>10.20.30.42:8080</td>
                                 <td><span
@@ -152,7 +164,8 @@
                                         Log</button></td>
                             </tr>
                             <tr>
-                                <td class="ps-4 fw-bold">Pay-WAS-02</td>
+                                <td class="ps-4 fw-bold">Pay-WAS-02 <span
+                                        class="badge bg-light text-secondary border ms-1">STG</span></td>
                                 <td><span class="badge rounded-pill text-bg-secondary bg-opacity-75">PD</span></td>
                                 <td>192.168.0.11:8080</td>
                                 <td><span
@@ -263,21 +276,36 @@
 
         // --- Initialization ---
         document.addEventListener('DOMContentLoaded', () => {
-            // Simulate Admin Checker
-            // In real app, check currentUser.level or server-side rendered flag.
-            // Here we just check the navbar text for 'Admin'.
-            const navbarText = document.querySelector('.navbar-brand').nextElementSibling?.innerText || '';
-            // Or better, just check the specific element
-            const userBadge = document.querySelector('nav .text-white small');
-            if (userBadge && userBadge.innerText.includes('Admin')) {
-                document.getElementById('groupFilterContainer').style.display = 'block';
-            }
+            applyPermissions();
         });
+
+        // Listen for Global Context Change
+        document.addEventListener('userContextChanged', (e) => {
+            applyPermissions();
+            filterHistory(); // Re-apply filter with new context
+            showToast(`[Page] History view updated for: ${currentUser.level}`);
+        });
+
+        function applyPermissions() {
+            // Group Filter Visibility
+            // Use global currentUser
+            const isAdmin = currentUser.level === 'Admin';
+            const groupFilterContainer = document.getElementById('groupFilterContainer');
+
+            if (groupFilterContainer) {
+                groupFilterContainer.style.display = isAdmin ? 'block' : 'none';
+                if (!isAdmin) {
+                    // Reset Value if hidden
+                    document.getElementById('filterGroup').value = '';
+                }
+            }
+        }
 
         // --- History Filter Logic ---
         function filterHistory() {
             const agentVal = document.getElementById('filterAgent').value.toUpperCase();
             const groupVal = document.getElementById('filterGroup').value.toUpperCase(); // NEW
+            const serverTypeVal = document.getElementById('filterServerType').value.toUpperCase(); // NEW
             const ipVal = document.getElementById('filterIp').value;
             const typeVal = document.getElementById('filterType').value;
             const resultVal = document.getElementById('filterResult').value;
@@ -299,8 +327,14 @@
                 const userText = row.cells[6].innerText.trim().toUpperCase();
 
                 // Checks
+                // Permission Check: Non-Admins MUST match their group
+                if (currentUser && currentUser.level !== 'Admin') {
+                    if (groupText !== currentUser.group) { row.style.display = 'none'; return; }
+                }
+
                 if (agentVal && !agentText.includes(agentVal)) { row.style.display = 'none'; return; }
                 if (groupVal && !groupText.includes(groupVal)) { row.style.display = 'none'; return; } // NEW
+                if (serverTypeVal && !agentText.includes(serverTypeVal)) { row.style.display = 'none'; return; } // NEW - Server Type is in Name column
                 if (ipVal && !ipText.includes(ipVal)) { row.style.display = 'none'; return; }
 
                 // For Action/Result (Exact or Includes - using includes for simplicity with text)
@@ -326,6 +360,7 @@
             // Manually clear inputs just in case
             document.getElementById('filterAgent').value = '';
             document.getElementById('filterGroup').value = '';
+            document.getElementById('filterServerType').value = ''; // NEW
             document.getElementById('filterIp').value = '';
             document.getElementById('filterType').value = '';
             document.getElementById('filterResult').value = '';

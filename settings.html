@@ -187,12 +187,30 @@
     <!-- Settings Logic -->
     <script src="js/settings.js"></script>
     <script>
-        // Check Admin Permission on Load
-        document.addEventListener("DOMContentLoaded", function () {
-            // Note: In a real app, this should be server-side. 
-            // Here we just redirect if not admin (simulated based on localStorage if we tracked session there, 
-            // but currently settings.html is menu-restricted).
-            // Since this is a standalone page, we'll assume access means authorized or allow testing.
+        // Settings Access Control
+        function checkAccess() {
+            if (currentUser.level !== 'Admin') {
+                // Show Access Denied overlay or Alert
+                // For simulator test, we can just alert and maybe disable interaction
+                // But typically we redirect.
+                // Since this is a test simulator, let's show a modal or alert.
+                // Or simply hide content.
+                document.querySelector('.content-area').style.opacity = '0.2';
+                document.querySelector('.content-area').style.pointerEvents = 'none';
+                showToast('Access Denied: Admin only.', 'danger');
+            } else {
+                document.querySelector('.content-area').style.opacity = '1';
+                document.querySelector('.content-area').style.pointerEvents = 'auto';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initial check (delay slightly to ensure currentUser is loaded if async, but here it's sync from wrapper)
+            setTimeout(checkAccess, 100);
+        });
+
+        document.addEventListener('userContextChanged', () => {
+            checkAccess();
         });
     </script>
 </body>

@@ -31,16 +31,7 @@
                 </div>
 
                 <!-- Permission Simulation Control -->
-                <div class="d-flex align-items-center bg-white p-2 border rounded shadow-sm">
-                    <span class="me-2 small fw-bold text-muted"><i class="bi bi-person-badge"></i> Current User
-                        Context:</span>
-                    <select class="form-select form-select-sm" style="width: 200px;" id="userContextSelect">
-                        <option value="admin">System Admin (Super)</option>
-                        <option value="hong.kd">홍길동 (Master/PD)</option>
-                        <option value="kim.cs">김철수 (Content/SO)</option>
-                        <option value="lee.yh">이영희 (Report/PD)</option>
-                    </select>
-                </div>
+                <!-- Global Simulator used in Header -->
             </div>
 
             <div class="row justify-content-center">
@@ -187,26 +178,11 @@
             }
         ];
 
-        // Current User Logic (Simulation) - Default to Admin to show features
-        let currentUser = {
-            id: 'admin',
-            level: 'Admin'
-        };
-
-        const contextSelect = document.getElementById('userContextSelect');
-        contextSelect.addEventListener('change', (e) => {
-            const selectedId = e.target.value;
-            if (selectedId === 'admin') {
-                currentUser = { id: 'admin', level: 'Admin' };
-            } else {
-                const user = users.find(u => u.id === selectedId);
-                if (user) {
-                    currentUser = { ...user };
-                }
-            }
+        // Current User Logic (Handled by Global Header Simulator)
+        document.addEventListener('userContextChanged', (e) => {
             updatePermissions();
             updateAdminMenuVisibility(currentUser.level);
-            showToast(`User context switched to: ${currentUser.id === 'admin' ? 'Admin' : currentUser.name} (${currentUser.level})`);
+            showToast(`[Page] Form permissions updated for: ${currentUser.level}`);
         });
 
         function updatePermissions() {

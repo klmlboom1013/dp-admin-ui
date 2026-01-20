@@ -42,28 +42,34 @@
                         </div>
                         <div class="row g-3">
 
-                            <div class="col-md-3">
+                            <div class="col-md-4">
                                 <label for="searchName" class="form-label small fw-bold">Name</label>
                                 <input type="text" class="form-control form-control-sm" id="searchName"
                                     placeholder="ex) Pay-WAS">
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-4">
+                                <label for="searchServerType" class="form-label small fw-bold">Server Type</label>
+                                <select class="form-select form-select-sm" id="searchServerType">
+                                    <option value="">ALL</option>
+                                    <option value="DEV">DEV</option>
+                                    <option value="STG">STG</option>
+                                    <option value="PROD">PROD</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
                                 <label for="searchIp" class="form-label small fw-bold">IP Address</label>
                                 <input type="text" class="form-control form-control-sm" id="searchIp"
                                     placeholder="part of IP">
                             </div>
-                            <div class="col-md-3" id="searchGroupContainer" style="display: none;">
-                                <label for="searchGroup" class="form-label small fw-bold">Group</label>
+                            <div class="col-md-4" id="searchGroupContainer" style="display: none;">
+                                <label for="searchGroup" class="form-label small fw-bold">Group (Admin Only)</label>
                                 <select class="form-select form-select-sm" id="searchGroup">
                                     <option value="">ALL</option>
                                     <option value="PD">PD</option>
                                     <option value="SO">SO</option>
-                                    <option value="QA">QA</option>
-                                    <option value="OP">OP</option>
-                                    <option value="Common">Common</option>
                                 </select>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-4">
                                 <label for="searchStatus" class="form-label small fw-bold">Status</label>
                                 <select class="form-select form-select-sm" id="searchStatus">
                                     <option value="">ALL</option>
@@ -71,7 +77,6 @@
                                     <option value="STOPPED">STOPPED</option>
                                     <option value="STARTING">STARTING</option>
                                     <option value="STOPPING">STOPPING</option>
-                                    <option value="UNKNOWN">UNKNOWN</option>
                                 </select>
                             </div>
                             <div class="col-md-6">
@@ -370,26 +375,27 @@
     <script src="js/common.js"></script>
 
     <script>
-        // Mock User Context for Simulation
-        // In a real app, this would be fetched from session/localStorage
-        const currentUser = {
-            id: 'admin',
-            name: '김관리',
-            level: 'Admin', // Change to 'Master' or 'Report' to test non-admin view
-            group: 'Admin'
-        };
-
-        // Determine Admin Status
-        const isAdmin = currentUser.level === 'Admin';
-
-        // Initialize UI based on Context
+        // Initialize UI based on Global Context
         document.addEventListener('DOMContentLoaded', () => {
+            applyPermissions();
+        });
+
+        // Listen for Global Context Change
+        document.addEventListener('userContextChanged', (e) => {
+            applyPermissions();
+            // Re-filter if needed
+            filterAgents();
+            showToast(`[Page] View updated for: ${currentUser.level}`);
+        });
+
+        function applyPermissions() {
             // Group Filter Visibility
+            const isAdmin = currentUser.level === 'Admin';
             const groupFilterContainer = document.getElementById('searchGroupContainer');
             if (groupFilterContainer) {
                 groupFilterContainer.style.display = isAdmin ? 'block' : 'none';
             }
-        });
+        }
 
         // --- Multi-select Logic ---
         const tableRows = document.querySelectorAll('table tbody tr');
@@ -637,72 +643,68 @@
             });
         }
         // --- Search Filter Logic ---
-        // --- Search Filter Logic ---
         function filterAgents() {
-            // Updated for new column structure: 0=Check, 1=Name, 2=Group, 3=IP, 4=Status, 5=Date
+            const nameVal = document.getElementById('searchName').value.toUpperCase();
+            const groupVal = document.getElementById('searchGroup').value.toUpperCase();
+            const serverTypeVal = document.getElementById('searchServerType').value.toUpperCase();
+            const ipVal = document.getElementById('searchIp').value;
+            const statusVal = document.getElementById('searchStatus').value;
+            const startDate = document.getElementById('searchDateStart').value;
+            const endDate = document.getElementById('searchDateEnd').value;
 
-            // Check if elements exist before value to avoid errors
-            const nameInput = document.getElementById('searchName');
-            const groupInput = document.getElementById('searchGroup');
-            const ipInput = document.getElementById('searchIp');
-            const statusInput = document.getElementById('searchStatus');
-            const dateStartInput = document.getElementById('searchDateStart');
-            const dateEndInput = document.getElementById('searchDateEnd');
+            const tableRows = document.querySelectorAll('table tbody tr');
 
-            const nameVal = nameInput ? nameInput.value.toUpperCase() : '';
-            const groupVal = groupInput ? groupInput.value.toUpperCase() : '';
-            const ipVal = ipInput ? ipInput.value : '';
-            const statusVal = statusInput ? statusInput.value : '';
-            const dateStartVal = dateStartInput ? dateStartInput.value : '';
-            const dateEndVal = dateEndInput ? dateEndInput.value : '';
-
-            const rows = document.querySelectorAll('table tbody tr');
-
-            rows.forEach(row => {
+            tableRows.forEach(row => {
                 // Ensure row has enough cells
                 if (row.cells.length < 6) return;
 
                 const nameCell = row.cells[1].innerText.trim().toUpperCase();
+
+                // Server Type Check
+                let serverType = row.getAttribute('data-server-type');
+                if (!serverType) {
+                    const badge = row.cells[1].querySelector('.badge');
+                    if (badge) serverType = badge.innerText.trim().toUpperCase();
+                } else {
+                    serverType = serverType.toUpperCase();
+                }
+
                 const groupCell = row.cells[2].innerText.trim().toUpperCase();
                 const ipCell = row.cells[3].innerText.trim();
                 const statusCellText = row.cells[4].innerText.trim();
                 const dateCellText = row.cells[5].innerText.trim().substring(0, 10);
 
-                // 1. Check Name
-                if (nameVal && !nameCell.includes(nameVal)) {
-                    row.style.display = 'none';
-                    return;
-                }
-                // 2. Check Group
-                // Exact match might be better for codes, but let's allow partial or exact based on needs.
-                // Dropdown usually implies exact match.
-                if (groupVal && groupCell !== groupVal) {
-                    row.style.display = 'none';
-                    return;
-                }
-                // 3. Check IP
-                if (ipVal && !ipCell.includes(ipVal)) {
-                    row.style.display = 'none';
-                    return;
-                }
-                // 4. Check Status
-                if (statusVal && statusCellText !== statusVal) {
-                    row.style.display = 'none';
-                    return;
-                }
-                // 5. Check Date Range
-                if (dateStartVal || dateEndVal) {
-                    if (dateStartVal && dateCellText < dateStartVal) {
-                        row.style.display = 'none';
-                        return;
-                    }
-                    if (dateEndVal && dateCellText > dateEndVal) {
+                // 1. Permission (Group) Check
+                if (currentUser && currentUser.level !== 'Admin') {
+                    if (groupCell !== currentUser.group) {
                         row.style.display = 'none';
                         return;
                     }
                 }
 
-                // Match
+                // 2. Name
+                if (nameVal && !nameCell.includes(nameVal)) { row.style.display = 'none'; return; }
+
+                // 3. Server Type
+                if (serverTypeVal) {
+                    if (!serverType || !serverType.includes(serverTypeVal)) {
+                        row.style.display = 'none'; return;
+                    }
+                }
+
+                // 4. IP
+                if (ipVal && !ipCell.includes(ipVal)) { row.style.display = 'none'; return; }
+
+                // 5. Group (Admin only)
+                if (groupVal && !groupCell.includes(groupVal)) { row.style.display = 'none'; return; }
+
+                // 6. Status
+                if (statusVal && !statusCellText.includes(statusVal)) { row.style.display = 'none'; return; }
+
+                // 7. Date Range
+                if (startDate && dateCellText < startDate) { row.style.display = 'none'; return; }
+                if (endDate && dateCellText > endDate) { row.style.display = 'none'; return; }
+
                 row.style.display = '';
             });
 
@@ -711,6 +713,12 @@
 
         function resetSearch() {
             document.getElementById('agentSearchForm').reset();
+            // Manually clear inputs just in case
+            document.getElementById('searchName').value = '';
+            document.getElementById('searchServerType').value = '';
+            document.getElementById('searchIp').value = '';
+            document.getElementById('searchGroup').value = '';
+            document.getElementById('searchStatus').value = '';
             filterAgents();
         }
     </script>

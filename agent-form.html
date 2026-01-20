@@ -137,29 +137,23 @@
     <script>
         // URL 파라미터로 데이터 받아와서 폼 채우기 (데이터 연동 시뮬레이션)
         // Mock Data for Simulation
-        const mockUsers = {
-            'admin': { id: 'admin', name: '김관리', level: 'TopAdmin', group: 'Admin' },
-            'master': { id: 'master', name: '이팀장', level: 'Master', group: 'PD' },
-            'report': { id: 'report', name: '박사원', level: 'Report', group: 'SO' }
-        };
-        const mockGroups = ['PD', 'SO', 'QA', 'OP', 'Common'];
-
-        let currentUser = mockUsers['admin'];
+        // Initialize currentUser from global state or default
+        let currentUser = window.currentUser || { level: 'Admin', group: 'SYSTEM' }; // Default fallback
 
         document.addEventListener('DOMContentLoaded', () => {
-            // 1. Initialize Simulator
-            const contextSelect = document.getElementById('userContextSelect');
-            const userDisplay = document.getElementById('currentUserDisplay');
-
-            contextSelect.addEventListener('change', (e) => {
-                const userId = e.target.value;
-                currentUser = mockUsers[userId];
-                userDisplay.textContent = `${currentUser.name} (${currentUser.level})`;
+            // 1. Listen for Global Simulator Changes
+            document.addEventListener('userContextChanged', (e) => {
+                currentUser = e.detail;
                 updateFormBasedOnContext();
-                showToast(`User context switched to: ${currentUser.name} (${currentUser.level})`);
+                // Toast is handled by header or not needed here to avoid double toast
             });
 
             // 2. Initial Render
+            // If header loads after this, it will trigger event. 
+            // If header loads before, window.currentUser is set.
+            if (window.currentUser) {
+                currentUser = window.currentUser;
+            }
             updateFormBasedOnContext();
 
             // 3. Load URL Params
@@ -209,10 +203,13 @@
             }
         });
 
+        // Mock Groups for Admin Selection
+        const mockGroups = ['PD', 'SO', 'QA', 'OP', 'Common'];
+
         function updateFormBasedOnContext() {
             const container = document.getElementById('ownerGroupContainer');
             const initialGroup = container.dataset.initialGroup || '';
-            const isAdmin = currentUser.level === 'TopAdmin';
+            const isAdmin = currentUser.level === 'Admin'; // Corrected Level Check
 
             let html = '';
 
@@ -221,17 +218,15 @@
                 html = `<select class="form-select" id="ownerGroup">
                             <option value="" ${!initialGroup ? 'selected' : ''}>Choose...</option>`;
                 mockGroups.forEach(g => {
+                    // Match initialGroup if present
                     const selected = g === initialGroup ? 'selected' : '';
                     html += `<option value="${g}" ${selected}>${g}</option>`;
                 });
                 html += `</select>`;
             } else {
                 // User: Read-only Input (User's Group)
-                // If editing, it should show valid group. But if creating, it shows user's group.
-                // Requirement: "Show their account group code... Master/Report/Content cannot edit"
-                const displayGroup = initialGroup || currentUser.group;
-                html = `<input type="text" class="form-control" id="ownerGroup" value="${displayGroup}" readonly>`;
-                // Add hidden input to submit the value if needed, or rely on the readonly input
+                const displayGroup = initialGroup || currentUser.group || 'Unknown';
+                html = `<input type="text" class="form-control" id="ownerGroup" value="${displayGroup}" readonly disabled>`;
             }
 
             container.innerHTML = html;

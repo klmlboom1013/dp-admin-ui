@@ -205,33 +205,56 @@
     <script src="js/common.js"></script>
 
     <script>
-        // --- Mock Data & Context ---
-        const mockUsers = {
-            'admin': { id: 'admin', name: '김관리', level: 'Admin', group: 'Admin' },
-            'master': { id: 'master', name: '이팀장', level: 'Master', group: 'PD' },
-            'report': { id: 'report', name: '박사원', level: 'Report', group: 'SO' }
-        };
-        const mockGroups = ['PD', 'SO', 'QA', 'OP', 'Common'];
-        let currentUser = mockUsers['admin']; // Default
-
         // --- Initialization ---
         const urlParams = new URLSearchParams(window.location.search);
         const groupNameInput = document.getElementById('groupName');
         const groupDescInput = document.getElementById('groupDesc');
+        const ownerGroupContainer = document.getElementById('ownerGroupContainer'); // Check if redundant declaration
 
-        // Context Simulator Setup
-        const contextSelect = document.getElementById('userContextSelect');
-        const userDisplay = document.getElementById('currentUserDisplay');
-        if (contextSelect) {
-            contextSelect.value = 'admin';
-            contextSelect.addEventListener('change', (e) => {
-                const userId = e.target.value;
-                currentUser = mockUsers[userId];
-                userDisplay.textContent = `${currentUser.name} (${currentUser.level})`;
-                if (isEditMode) cancelEdit(); // Reset edit mode on context switch
-                updateGroupInfoUI();
-                showGlobalToast(`User context switched to: ${currentUser.name} (${currentUser.level})`);
-            });
+        // Remove Local Simulator Logic (Handled globally by header.js)
+
+        // Initialize UI Logic
+        document.addEventListener('DOMContentLoaded', () => {
+            // Apply initial permissions check
+            checkGroupAccess();
+            updateGroupInfoUI();
+        });
+
+        // Listen for Global Context Change
+        document.addEventListener('userContextChanged', (e) => {
+            if (isEditMode) cancelEdit(); // Reset edit mode on context switch
+            checkGroupAccess();
+            updateGroupInfoUI();
+            // Re-render list if needed (for mock only) ?
+            // In real app we might reload data. Here existing mock data is static.
+            showGlobalToast(`[Page] Context switched to: ${currentUser.name} (${currentUser.level})`);
+        });
+
+        function checkGroupAccess() {
+            // If editing an existing group, non-Admins must match the Owner Group
+            // Logic: Read the Owner Group from the page logic (container dataset)
+            const currentOwnerGroup = document.getElementById('ownerGroupContainer').dataset.currentGroup;
+
+            // If new group, access is allowed (they will create for their group)
+            if (isNewGroup) return;
+
+            if (currentUser.level !== 'Admin' && currentOwnerGroup) {
+                if (currentOwnerGroup !== currentUser.group) {
+                    // Access Denied simulation
+                    showGlobalToast('Access Denied: You do not belong to this group.', 'danger');
+                    document.querySelector('.content-area').style.opacity = '0.2';
+                    document.querySelector('.content-area').style.pointerEvents = 'none';
+                    // Optional: Redirect
+                    // window.location.href = 'agent-group-list.html';
+                } else {
+                    document.querySelector('.content-area').style.opacity = '1';
+                    document.querySelector('.content-area').style.pointerEvents = 'auto';
+                }
+            } else {
+                // Admin or Match
+                document.querySelector('.content-area').style.opacity = '1';
+                document.querySelector('.content-area').style.pointerEvents = 'auto';
+            }
         }
 
         // --- Agent Table & Selection Logic ---
@@ -246,7 +269,6 @@
         let isNewGroup = false;
 
         // Mock Initial Data
-        const ownerGroupContainer = document.getElementById('ownerGroupContainer');
 
         if (urlParams.get('name')) {
             groupNameInput.value = urlParams.get('name');

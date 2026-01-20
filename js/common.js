@@ -1,6 +1,12 @@
 /**
  * Common JS Utilities
  */
+// Global User Context (Managed by header.js simulator)
+window.currentUser = { id: 'admin', level: 'Admin', group: 'SYSTEM' }; // Default safe fallback
+
+/**
+ * common.js JS Utilities
+ */
 
 // 현재 페이지 URL을 기반으로 사이드바 메뉴 활성화
 // Sidebar highlighting logic moved to js/sidebar.js
