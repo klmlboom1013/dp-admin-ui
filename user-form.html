@@ -191,7 +191,7 @@
             },
             {
                 id: 'admin', name: '김관리', dept: 'CTO', team: '인프라팀', rank: '수석',
-                status: 'NORMAL', level: 'TopAdmin', group: 'SYSTEM', expireDate: '2099-12-31',
+                status: 'NORMAL', level: 'Admin', group: 'SYSTEM', expireDate: '2099-12-31',
                 email: 'admin@company.com', phone: '010-1111-2222'
             }
         ];
@@ -199,14 +199,14 @@
         // Current User Logic (Simulation) - Default to Admin to show features
         let currentUser = {
             id: 'admin',
-            level: 'TopAdmin'
+            level: 'Admin'
         };
 
         const contextSelect = document.getElementById('userContextSelect');
         contextSelect.addEventListener('change', (e) => {
             const selectedId = e.target.value;
             if (selectedId === 'admin') {
-                currentUser = { id: 'admin', level: 'TopAdmin' };
+                currentUser = { id: 'admin', level: 'Admin' };
             } else {
                 const user = users.find(u => u.id === selectedId);
                 if (user) {
@@ -222,7 +222,7 @@
             const urlParams = new URLSearchParams(window.location.search);
             const targetUserId = urlParams.get('id');
             const isSelf = currentUser.id === targetUserId;
-            const isTopAdmin = currentUser.level === 'TopAdmin';
+            const isTopAdmin = currentUser.level === 'Admin';
 
             // 1. Administrative Fields (Level, Group, Status)
             // Only TopAdmin can edit these

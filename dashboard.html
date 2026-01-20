@@ -65,83 +65,84 @@
                 <div class="col-md-3">
                     <div class="card text-white bg-warning mb-3 shadow-sm">
                         <div class="card-body">
-                            <h5 class="card-title">Starting</h5>
+                            <h5 class="card-title">In Progress</h5>
                             <p class="card-text fs-2">1</p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Agent Grid -->
-            <h5 class="mb-3">Agent List</h5>
-            <div class="row">
-                <!-- Agent 1 -->
-                <div class="col-md-4 mb-4">
-                    <div class="card card-hover h-100 border-0 shadow-sm">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <h5 class="card-title fw-bold">Pay-WAS-01</h5>
-                                <span class="badge rounded-pill bg-light text-dark border">
-                                    <span class="status-dot bg-running"></span>
-                                    <span>RUNNING</span>
-                                </span>
-                            </div>
-                            <p class="text-muted small mb-1">IP: 192.168.0.10</p>
-                            <p class="text-muted small">Last Deploy: 2024-01-14 14:00</p>
-
-                            <div class="d-grid gap-2 mt-3">
-                                <a href="./agent-details.html" class="btn btn-outline-primary btn-sm">제어 콘솔 입장</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Agent 2 -->
-                <div class="col-md-4 mb-4">
-                    <div class="card card-hover h-100 border-0 shadow-sm">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <h5 class="card-title fw-bold">Pay-WAS-02</h5>
-                                <span class="badge rounded-pill bg-light text-dark border">
-                                    <span class="status-dot bg-stopped"></span>
-                                    <span>STOPPED</span>
-                                </span>
-                            </div>
-                            <p class="text-muted small mb-1">IP: 192.168.0.11</p>
-                            <p class="text-muted small">Last Deploy: 2024-01-14 14:05</p>
-
-                            <div class="d-grid gap-2 mt-3">
-                                <a href="./agent-details.html" class="btn btn-outline-primary btn-sm">제어 콘솔 입장</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Agent 3 (Starting) -->
-                <div class="col-md-4 mb-4">
-                    <div class="card card-hover h-100 border-0 shadow-sm">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <h5 class="card-title fw-bold">Order-API-01</h5>
-                                <span class="badge rounded-pill bg-light text-dark border">
-                                    <span class="status-dot bg-starting"></span>
-                                    <span>STARTING...</span>
-                                </span>
-                            </div>
-                            <p class="text-muted small mb-1">IP: 10.20.30.42</p>
-                            <p class="text-muted small">Last Deploy: 2024-01-19 09:30</p>
-
-                            <div class="d-grid gap-2 mt-3">
-                                <button class="btn btn-primary btn-sm" disabled>
-                                    <span class="spinner-border spinner-border-sm" role="status"
-                                        aria-hidden="true"></span>
-                                    시작 중...
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+            <!-- Agent Action History (Recent 5) -->
+            <h5 class="mb-3">Agent Action History</h5>
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-body p-0">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th scope="col" class="ps-4">Name</th>
+                                <th scope="col">Action</th>
+                                <th scope="col">Result</th>
+                                <th scope="col">Time</th>
+                                <th scope="col" class="text-end pe-4">User</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="ps-4 fw-bold">Pay-WAS-01</td>
+                                <td><span
+                                        class="badge bg-success bg-opacity-10 text-success border border-success">START</span>
+                                </td>
+                                <td><span class="text-success fw-bold"><i
+                                            class="bi bi-check-circle-fill me-1"></i>Success</span></td>
+                                <td class="text-muted small">2024-01-20 10:00:00</td>
+                                <td class="text-end pe-4">김관리</td>
+                            </tr>
+                            <tr>
+                                <td class="ps-4 fw-bold">Order-API-01</td>
+                                <td><span
+                                        class="badge bg-warning bg-opacity-10 text-warning border border-warning">RESTART</span>
+                                </td>
+                                <td><span class="text-success fw-bold"><i
+                                            class="bi bi-check-circle-fill me-1"></i>Success</span></td>
+                                <td class="text-muted small">2024-01-20 09:55:00</td>
+                                <td class="text-end pe-4">이팀장</td>
+                            </tr>
+                            <tr>
+                                <td class="ps-4 fw-bold">Pay-WAS-02</td>
+                                <td><span
+                                        class="badge bg-danger bg-opacity-10 text-danger border border-danger">STOP</span>
+                                </td>
+                                <td><span class="text-success fw-bold"><i
+                                            class="bi bi-check-circle-fill me-1"></i>Success</span></td>
+                                <td class="text-muted small">2024-01-20 09:30:00</td>
+                                <td class="text-end pe-4">김관리</td>
+                            </tr>
+                            <tr>
+                                <td class="ps-4 fw-bold">Pay-WAS-01</td>
+                                <td><span
+                                        class="badge bg-primary bg-opacity-10 text-primary border border-primary">DEPLOY</span>
+                                </td>
+                                <td><span class="text-danger fw-bold"><i
+                                            class="bi bi-x-circle-fill me-1"></i>Fail</span></td>
+                                <td class="text-muted small">2024-01-20 09:10:00</td>
+                                <td class="text-end pe-4">박사원</td>
+                            </tr>
+                            <tr>
+                                <td class="ps-4 fw-bold">Order-API-01</td>
+                                <td><span
+                                        class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary">CONFIG</span>
+                                </td>
+                                <td><span class="text-success fw-bold"><i
+                                            class="bi bi-check-circle-fill me-1"></i>Success</span></td>
+                                <td class="text-muted small">2024-01-20 08:45:00</td>
+                                <td class="text-end pe-4">이팀장</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
+
+
         </div>
     </div>
 

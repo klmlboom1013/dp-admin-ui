@@ -61,6 +61,17 @@
                                 <input type="text" class="form-control form-control-sm" id="searchIp"
                                     placeholder="part of IP">
                             </div>
+                            <div class="col-md-3" id="searchGroupContainer" style="display: none;">
+                                <label for="searchGroup" class="form-label small fw-bold">Group</label>
+                                <select class="form-select form-select-sm" id="searchGroup">
+                                    <option value="">ALL</option>
+                                    <option value="PD">PD</option>
+                                    <option value="SO">SO</option>
+                                    <option value="QA">QA</option>
+                                    <option value="OP">OP</option>
+                                    <option value="Common">Common</option>
+                                </select>
+                            </div>
                             <div class="col-md-3">
                                 <label for="searchStatus" class="form-label small fw-bold">Status</label>
                                 <select class="form-select form-select-sm" id="searchStatus">
@@ -103,6 +114,7 @@
                                 </th>
 
                                 <th scope="col">Name</th>
+                                <th scope="col">Group</th>
                                 <th scope="col">IP Address</th>
                                 <th scope="col">Status</th>
                                 <th scope="col">Last Update</th>
@@ -124,6 +136,7 @@
                                     </div>
                                     <small class="text-muted">Payment Gateway Service</small>
                                 </td>
+                                <td><span class="badge rounded-pill text-bg-secondary bg-opacity-75">PD</span></td>
                                 <td>192.168.0.10:8080</td>
                                 <td><span
                                         class="badge bg-success bg-opacity-10 text-success border border-success">RUNNING</span>
@@ -155,6 +168,7 @@
                                     </div>
                                     <small class="text-muted">Payment Gateway Service</small>
                                 </td>
+                                <td><span class="badge rounded-pill text-bg-secondary bg-opacity-75">PD</span></td>
                                 <td>192.168.0.11:8080</td>
                                 <td><span
                                         class="badge bg-danger bg-opacity-10 text-danger border border-danger">STOPPED</span>
@@ -186,6 +200,7 @@
                                     </div>
                                     <small class="text-muted">Order Processing API</small>
                                 </td>
+                                <td><span class="badge rounded-pill text-bg-secondary bg-opacity-75">SO</span></td>
                                 <td>10.20.30.42:8080</td>
                                 <td><span
                                         class="badge bg-danger bg-opacity-10 text-danger border border-danger">STOPPING</span>
@@ -215,6 +230,7 @@
                                     </div>
                                     <small class="text-muted">Payment Gateway Service</small>
                                 </td>
+                                <td><span class="badge rounded-pill text-bg-secondary bg-opacity-75">PD</span></td>
                                 <td>192.168.0.12:8080</td>
                                 <td><span
                                         class="badge bg-success bg-opacity-10 text-success border border-success">RUNNING</span>
@@ -246,6 +262,7 @@
                                     </div>
                                     <small class="text-muted">Order Processing API</small>
                                 </td>
+                                <td><span class="badge rounded-pill text-bg-secondary bg-opacity-75">SO</span></td>
                                 <td>10.20.30.43:8080</td>
                                 <td><span
                                         class="badge bg-info bg-opacity-10 text-info border border-info">STARTING</span>
@@ -275,6 +292,7 @@
                                     </div>
                                     <small class="text-muted">Payment Gateway Service</small>
                                 </td>
+                                <td><span class="badge rounded-pill text-bg-secondary bg-opacity-75">PD</span></td>
                                 <td>192.168.0.13:8080</td>
                                 <td><span
                                         class="badge bg-warning bg-opacity-10 text-warning border border-warning">RESTARTING</span>
@@ -361,6 +379,27 @@
     <script src="js/common.js"></script>
 
     <script>
+        // Mock User Context for Simulation
+        // In a real app, this would be fetched from session/localStorage
+        const currentUser = {
+            id: 'admin',
+            name: '김관리',
+            level: 'Admin', // Change to 'Master' or 'Report' to test non-admin view
+            group: 'Admin'
+        };
+
+        // Determine Admin Status
+        const isAdmin = currentUser.level === 'Admin';
+
+        // Initialize UI based on Context
+        document.addEventListener('DOMContentLoaded', () => {
+            // Group Filter Visibility
+            const groupFilterContainer = document.getElementById('searchGroupContainer');
+            if (groupFilterContainer) {
+                groupFilterContainer.style.display = isAdmin ? 'block' : 'none';
+            }
+        });
+
         // --- Multi-select Logic ---
         const tableRows = document.querySelectorAll('table tbody tr');
         let selectedRows = new Set();
@@ -482,9 +521,9 @@
             // Gather selected agents
             const selectedAgents = Array.from(selectedRows).map(row => {
                 return {
-                    id: row.querySelector('td:nth-child(2)').innerText.trim(),
-                    name: row.querySelector('td:nth-child(3) .fw-bold').childNodes[0].textContent.trim(), // Text node before badge
-                    serverType: row.dataset.serverType || (row.querySelector('.badge.bg-primary') ? 'PROD' : 'DEV') // Fallback check
+                    id: row.querySelector('td:nth-child(2)').innerText.trim(), // Name acts as ID here? Or we accept Name as ID. Previous code used cells[1] which is nth-child(2)
+                    name: row.querySelector('td:nth-child(2) .fw-bold').childNodes[0].textContent.trim(), // Name column is now index 1 (nth-child(2))
+                    serverType: row.dataset.serverType || (row.querySelector('.badge.bg-primary') ? 'PROD' : 'DEV')
                 };
             });
 
@@ -607,33 +646,46 @@
             });
         }
         // --- Search Filter Logic ---
+        // --- Search Filter Logic ---
         function filterAgents() {
-            const idVal = document.getElementById('searchId').value.toUpperCase();
-            const nameVal = document.getElementById('searchName').value.toUpperCase();
-            const ipVal = document.getElementById('searchIp').value; // Case insensitive not usually needed for IP but strictly string match
-            const statusVal = document.getElementById('searchStatus').value;
-            const dateStartVal = document.getElementById('searchDateStart').value;
-            const dateEndVal = document.getElementById('searchDateEnd').value;
+            // Updated for new column structure: 0=Check, 1=Name, 2=Group, 3=IP, 4=Status, 5=Date
+
+            // Check if elements exist before value to avoid errors
+            const nameInput = document.getElementById('searchName');
+            const groupInput = document.getElementById('searchGroup');
+            const ipInput = document.getElementById('searchIp');
+            const statusInput = document.getElementById('searchStatus');
+            const dateStartInput = document.getElementById('searchDateStart');
+            const dateEndInput = document.getElementById('searchDateEnd');
+
+            const nameVal = nameInput ? nameInput.value.toUpperCase() : '';
+            const groupVal = groupInput ? groupInput.value.toUpperCase() : '';
+            const ipVal = ipInput ? ipInput.value : '';
+            const statusVal = statusInput ? statusInput.value : '';
+            const dateStartVal = dateStartInput ? dateStartInput.value : '';
+            const dateEndVal = dateEndInput ? dateEndInput.value : '';
 
             const rows = document.querySelectorAll('table tbody tr');
 
             rows.forEach(row => {
-                // Cells: 0=Check, 1=ID, 2=Name, 3=IP, 4=Status, 5=Date
-                const idCell = row.cells[1].innerText.trim().toUpperCase();
-                const nameCell = row.cells[2].innerText.trim().toUpperCase(); // Includes badge text but generic match is ok
-                const ipCell = row.cells[3].innerText.trim();
-                // Status is better from dataset if available, or cell text
-                const statusCellText = row.cells[4].innerText.trim();
-                // Date format in cell: YYYY-MM-DD HH:MM
-                const dateCellText = row.cells[5].innerText.trim().substring(0, 10); // Extract YYYY-MM-DD
+                // Ensure row has enough cells
+                if (row.cells.length < 6) return;
 
-                // 1. Check ID
-                if (idVal && !idCell.includes(idVal)) {
+                const nameCell = row.cells[1].innerText.trim().toUpperCase();
+                const groupCell = row.cells[2].innerText.trim().toUpperCase();
+                const ipCell = row.cells[3].innerText.trim();
+                const statusCellText = row.cells[4].innerText.trim();
+                const dateCellText = row.cells[5].innerText.trim().substring(0, 10);
+
+                // 1. Check Name
+                if (nameVal && !nameCell.includes(nameVal)) {
                     row.style.display = 'none';
                     return;
                 }
-                // 2. Check Name
-                if (nameVal && !nameCell.includes(nameVal)) {
+                // 2. Check Group
+                // Exact match might be better for codes, but let's allow partial or exact based on needs.
+                // Dropdown usually implies exact match.
+                if (groupVal && groupCell !== groupVal) {
                     row.style.display = 'none';
                     return;
                 }
@@ -663,7 +715,6 @@
                 row.style.display = '';
             });
 
-            // Clear selections after filter to avoid actionable invisible items issues
             clearSelection();
         }
 

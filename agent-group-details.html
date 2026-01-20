@@ -27,8 +27,20 @@
             <a class="navbar-brand fw-bold" href="./dashboard.html">
                 <i class="bi bi-rocket-takeoff-fill me-2"></i>Deploy System
             </a>
-            <div class="d-flex align-items-center text-white">
-                <small class="me-3">Admin (김관리)</small>
+            <div class="d-flex align-items-center text-white gap-3">
+                <!-- Context Simulator -->
+                <div class="d-flex align-items-center">
+                    <small class="text-white-50 me-2">Simulator:</small>
+                    <select class="form-select form-select-sm bg-dark text-white border-secondary"
+                        id="userContextSelect" style="width: 150px;">
+                        <option value="admin">Admin (Top)</option>
+                        <option value="master">User (Master)</option>
+                        <option value="report">User (Report)</option>
+                    </select>
+                </div>
+                <div class="vr bg-secondary"></div>
+                <!-- Current User Display -->
+                <small class="me-3" id="currentUserDisplay">Admin (김관리)</small>
                 <a href="./login.html" class="btn btn-sm btn-outline-light">Logout</a>
             </div>
         </div>
@@ -69,7 +81,15 @@
                             <input type="text" class="form-control" id="groupName" placeholder="Enter Group Name"
                                 disabled>
                         </div>
-                        <div class="col-md-8">
+                        <div class="col-md-2">
+                            <label for="ownerGroup" class="form-label fw-bold">Owner Group <span
+                                    class="text-danger">*</span></label>
+                            <div id="ownerGroupContainer">
+                                <!-- Dynamically rendered -->
+                                <input type="text" class="form-control" value="Loading..." readonly disabled>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
                             <label for="groupDesc" class="form-label fw-bold">Description</label>
                             <input type="text" class="form-control" id="groupDesc" placeholder="Enter Description"
                                 disabled>
@@ -96,8 +116,8 @@
                                         <input class="form-check-input" type="checkbox" id="selectAll">
                                     </div>
                                 </th>
-                                <th scope="col">ID</th>
                                 <th scope="col">Name</th>
+                                <th scope="col">Group</th>
                                 <th scope="col">IP Address</th>
                                 <th scope="col">Status</th>
                                 <th scope="col">Last Update</th>
@@ -206,10 +226,34 @@
     <script src="js/common.js"></script>
 
     <script>
+        // --- Mock Data & Context ---
+        const mockUsers = {
+            'admin': { id: 'admin', name: '김관리', level: 'Admin', group: 'Admin' },
+            'master': { id: 'master', name: '이팀장', level: 'Master', group: 'PD' },
+            'report': { id: 'report', name: '박사원', level: 'Report', group: 'SO' }
+        };
+        const mockGroups = ['PD', 'SO', 'QA', 'OP', 'Common'];
+        let currentUser = mockUsers['admin']; // Default
+
         // --- Initialization ---
         const urlParams = new URLSearchParams(window.location.search);
         const groupNameInput = document.getElementById('groupName');
         const groupDescInput = document.getElementById('groupDesc');
+
+        // Context Simulator Setup
+        const contextSelect = document.getElementById('userContextSelect');
+        const userDisplay = document.getElementById('currentUserDisplay');
+        if (contextSelect) {
+            contextSelect.value = 'admin';
+            contextSelect.addEventListener('change', (e) => {
+                const userId = e.target.value;
+                currentUser = mockUsers[userId];
+                userDisplay.textContent = `${currentUser.name} (${currentUser.level})`;
+                if (isEditMode) cancelEdit(); // Reset edit mode on context switch
+                updateGroupInfoUI();
+                showGlobalToast(`User context switched to: ${currentUser.name} (${currentUser.level})`);
+            });
+        }
 
         // --- Agent Table & Selection Logic ---
         const tableBody = document.querySelector('#groupAgentTable tbody');
@@ -223,9 +267,13 @@
         let isNewGroup = false;
 
         // Mock Initial Data
+        const ownerGroupContainer = document.getElementById('ownerGroupContainer');
+
         if (urlParams.get('name')) {
             groupNameInput.value = urlParams.get('name');
             groupDescInput.value = urlParams.get('desc') || '';
+            // Default Owner Group for mock
+            ownerGroupContainer.dataset.currentGroup = 'PD';
 
             // Generate some mock agents for this group
             renderAgentTable([
@@ -236,13 +284,53 @@
             // New Group -> Default to Edit Mode
             isNewGroup = true;
             groupNameInput.value = '';
+            // Default Owner Group for new group (could be user's group)
+            ownerGroupContainer.dataset.currentGroup = 'PD';
+
             document.getElementById('emptyState').classList.remove('d-none');
             // Ensure DOM is fully ready before toggling? Script is at end of body so it should be fine.
             setTimeout(() => toggleEditMode(true), 0);
         }
 
+        // Initial Render of Group Info
+        updateGroupInfoUI();
+
 
         // --- View/Edit Mode Logic ---
+        function updateGroupInfoUI() {
+            const container = document.getElementById('ownerGroupContainer');
+            if (!container) return;
+
+            const currentGroup = container.dataset.currentGroup || 'PD';
+            const isAdmin = currentUser.level === 'TopAdmin';
+
+            let html = '';
+
+            if (isEditMode) {
+                if (isAdmin) {
+                    // Admin in Edit Mode: Select Box
+                    html = `<select class="form-select" id="ownerGroup">`;
+                    mockGroups.forEach(g => {
+                        const selected = g === currentGroup ? 'selected' : '';
+                        html += `<option value="${g}" ${selected}>${g}</option>`;
+                    });
+                    html += `</select>`;
+                } else {
+                    // User in Edit Mode: Read-only
+                    // If creating new (isNewGroup), default to their group? 
+                    // Requirement says "Admin이 아닌 계정은 자신이 속한 그룹 코드가 보여지고"
+                    // If editing, they see the *current* group (which they might own).
+                    // If they are creating, they see *their* group.
+                    const displayGroup = isNewGroup ? currentUser.group : currentGroup;
+                    html = `<input type="text" class="form-control" id="ownerGroup" value="${displayGroup}" readonly disabled>`;
+                }
+            } else {
+                // View Mode: Always Text (Disabled)
+                html = `<input type="text" class="form-control" id="ownerGroup" value="${currentGroup}" disabled>`;
+            }
+            container.innerHTML = html;
+        }
+
         function toggleEditMode(forceEdit = null) {
             isEditMode = forceEdit !== null ? forceEdit : !isEditMode;
 
@@ -255,6 +343,9 @@
             // Inputs
             groupNameInput.disabled = !isEditMode;
             groupDescInput.disabled = !isEditMode;
+
+            // Re-render Owner Group field based on new mode
+            updateGroupInfoUI();
 
             if (isEditMode) {
                 // Edit Mode Active
@@ -285,13 +376,20 @@
         }
 
         function saveGroupInfo() {
+            // Save Owner Group if it was editable
+            const ownerGroupSelect = document.getElementById('ownerGroup');
+            if (ownerGroupSelect && ownerGroupSelect.tagName === 'SELECT') {
+                document.getElementById('ownerGroupContainer').dataset.currentGroup = ownerGroupSelect.value;
+            }
+
             if (isNewGroup) {
-                showToast('새로운 그룹 생성 완료 (시뮬레이션)', 'success', () => {
+                showGlobalToast('새로운 그룹 생성 완료 (시뮬레이션)', 'success');
+                setTimeout(() => {
                     window.location.href = './agent-group-list.html';
-                });
+                }, 1000);
                 return;
             }
-            showToast('그룹 정보가 저장되었습니다.');
+            showGlobalToast('그룹 정보가 저장되었습니다.');
             toggleEditMode(false);
         }
 
@@ -337,19 +435,21 @@
                 const isTransient = agent.status === 'STARTING' || agent.status === 'STOPPING';
                 const disabledAttr = isTransient ? 'disabled' : '';
 
+                const ownerGroup = document.getElementById('ownerGroupContainer').dataset.currentGroup || 'PD';
+
                 tr.innerHTML = `
                     <td class="ps-4">
                         <div class="form-check">
                             <input class="form-check-input row-checkbox" type="checkbox" ${isEditMode || isTransient ? 'disabled' : ''}>
                         </div>
                     </td>
-                    <td class="fw-bold text-muted">${agent.id}</td>
                     <td>
                         <div class="fw-bold">
                             ${agent.name}
                             ${serverTypeBadge}
                         </div>
                     </td>
+                    <td><span class="badge rounded-pill text-bg-secondary bg-opacity-75">${ownerGroup}</span></td>
                     <td>${agent.ip || '192.168.0.1'}</td>
                     <td><span class="badge ${badgeClass}">${agent.status}</span></td>
                     <td>${lastUpdate}</td>

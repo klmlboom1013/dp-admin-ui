@@ -104,7 +104,7 @@
         // Current User Logic (Simulation)
         let currentUser = {
             id: 'admin',
-            level: 'TopAdmin', // System Admin
+            level: 'Admin', // System Admin
             group: 'SYSTEM'
         };
 
@@ -112,7 +112,7 @@
         contextSelect.addEventListener('change', (e) => {
             const selectedId = e.target.value;
             if (selectedId === 'admin') {
-                currentUser = { id: 'admin', level: 'TopAdmin', group: 'SYSTEM' };
+                currentUser = { id: 'admin', level: 'Admin', group: 'SYSTEM' };
             } else {
                 // Find user from mock data
                 const user = users.find(u => u.id === selectedId);
@@ -128,7 +128,7 @@
         // Permission Check Function
         function canEditOrDelete(targetUser) {
             // 1. Admin: All allowed
-            if (currentUser.level === 'TopAdmin') return true;
+            if (currentUser.level === 'Admin') return true;
 
             // 2. Self: Always allowed
             if (currentUser.id === targetUser.id) return true;
@@ -144,7 +144,7 @@
 
         // Admin Status Action Handler
         function handleStatusAction(userId, currentStatus) {
-            if (currentUser.level !== 'TopAdmin') return;
+            if (currentUser.level !== 'Admin') return;
 
             const userIndex = users.findIndex(u => u.id === userId);
             if (userIndex === -1) return;
@@ -170,7 +170,7 @@
             if (userIndex === -1) return;
             const user = users[userIndex];
 
-            if (currentUser.level === 'TopAdmin') {
+            if (currentUser.level === 'Admin') {
                 // Admin: Immediate Delete
                 showConfirm(`[관리자] '${user.name}' 계정을 영구히 삭제하시겠습니까?`, function () {
                     users.splice(userIndex, 1);

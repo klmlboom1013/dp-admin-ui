@@ -45,17 +45,33 @@
                             </div>
                         </div>
                         <div class="row g-3">
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                                 <label for="filterAgent" class="form-label small fw-bold">Agent Name</label>
                                 <input type="text" class="form-control form-control-sm" id="filterAgent"
                                     placeholder="ex) Pay-WAS">
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-2" id="groupFilterContainer" style="display: none;">
+                                <label for="filterGroup" class="form-label small fw-bold">Group</label>
+                                <select class="form-select form-select-sm" id="filterGroup">
+                                    <option value="">ALL</option>
+                                    <option value="PD">PD</option>
+                                    <option value="SO">SO</option>
+                                    <option value="QA">QA</option>
+                                    <option value="OP">OP</option>
+                                    <option value="COMMON">Common</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
                                 <label for="filterIp" class="form-label small fw-bold">IP Address</label>
                                 <input type="text" class="form-control form-control-sm" id="filterIp"
                                     placeholder="part of IP">
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-2">
+                                <label for="filterUser" class="form-label small fw-bold">User Name</label>
+                                <input type="text" class="form-control form-control-sm" id="filterUser"
+                                    placeholder="User Name">
+                            </div>
+                            <div class="col-md-2">
                                 <label for="filterType" class="form-label small fw-bold">Action</label>
                                 <select class="form-select form-select-sm" id="filterType">
                                     <option value="">ALL</option>
@@ -64,7 +80,7 @@
                                     <option value="RESTART">RESTART</option>
                                 </select>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                                 <label for="filterResult" class="form-label small fw-bold">Result</label>
                                 <select class="form-select form-select-sm" id="filterResult">
                                     <option value="">ALL</option>
@@ -74,11 +90,6 @@
                                 </select>
                             </div>
 
-                            <div class="col-md-3">
-                                <label for="filterUser" class="form-label small fw-bold">User Name</label>
-                                <input type="text" class="form-control form-control-sm" id="filterUser"
-                                    placeholder="User Name">
-                            </div>
                             <div class="col-md-6">
                                 <label class="form-label small fw-bold">Time Range</label>
                                 <div class="input-group input-group-sm">
@@ -87,7 +98,7 @@
                                     <input type="date" class="form-control" id="filterEndDate">
                                 </div>
                             </div>
-                            <div class="col-md-3 d-flex align-items-end justify-content-end">
+                            <div class="col-md-6 d-flex align-items-end justify-content-end">
                                 <button type="button" class="btn btn-sm btn-secondary me-2"
                                     onclick="resetHistoryFilter()"><i
                                         class="bi bi-arrow-counterclockwise me-1"></i>Reset</button>
@@ -106,6 +117,7 @@
                         <thead class="table-light">
                             <tr>
                                 <th scope="col" class="ps-4">Name</th>
+                                <th scope="col">Group</th>
                                 <th scope="col">IP Address</th>
                                 <th scope="col">Action</th>
                                 <th scope="col">Result</th>
@@ -117,6 +129,7 @@
                         <tbody>
                             <tr>
                                 <td class="ps-4 fw-bold">Pay-WAS-01</td>
+                                <td><span class="badge rounded-pill text-bg-secondary bg-opacity-75">PD</span></td>
                                 <td>192.168.0.10:8080</td>
                                 <td><span
                                         class="badge bg-success bg-opacity-10 text-success border border-success">START</span>
@@ -131,6 +144,7 @@
                             </tr>
                             <tr>
                                 <td class="ps-4 fw-bold">Order-API-01</td>
+                                <td><span class="badge rounded-pill text-bg-secondary bg-opacity-75">SO</span></td>
                                 <td>10.20.30.42:8080</td>
                                 <td><span
                                         class="badge bg-warning bg-opacity-10 text-warning border border-warning">RESTART</span>
@@ -148,6 +162,7 @@
                             </tr>
                             <tr>
                                 <td class="ps-4 fw-bold">Pay-WAS-02</td>
+                                <td><span class="badge rounded-pill text-bg-secondary bg-opacity-75">PD</span></td>
                                 <td>192.168.0.11:8080</td>
                                 <td><span
                                         class="badge bg-danger bg-opacity-10 text-danger border border-danger">STOP</span>
@@ -202,28 +217,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="js/common.js"></script>
     <script>
-        function viewLog(btn) {
-            const row = btn.closest('tr');
-            if (!row) return;
 
-            // Extract Data
-            const agentName = row.cells[0].innerText.trim();
-            const ip = row.cells[1].innerText.trim();
-            const actionBadge = row.cells[2].querySelector('.badge');
-            const action = actionBadge ? actionBadge.innerText.trim() : 'UNKNOWN';
-            const time = row.cells[4].innerText.trim();
-
-            // Set Title
-            document.getElementById('logModalTitle').innerText = `[${action}] ${agentName} (${ip})`;
-
-            // Generate Mock Log
-            const logContent = generateMockLog(action, time, agentName, ip);
-            document.getElementById('logContent').innerHTML = logContent;
-
-            // Show Modal
-            const logModal = new bootstrap.Modal(document.getElementById('logModal'));
-            logModal.show();
-        }
 
         function generateMockLog(action, time, name, ip) {
             let log = `[${time}] LOG START for ${name} @ ${ip}\n`;
@@ -276,9 +270,23 @@
                 .replace(/\[ERROR\]/g, '<span class="text-danger">[ERROR]</span>');
         }
 
+        // --- Initialization ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Simulate Admin Checker
+            // In real app, check currentUser.level or server-side rendered flag.
+            // Here we just check the navbar text for 'Admin'.
+            const navbarText = document.querySelector('.navbar-brand').nextElementSibling?.innerText || '';
+            // Or better, just check the specific element
+            const userBadge = document.querySelector('nav .text-white small');
+            if (userBadge && userBadge.innerText.includes('Admin')) {
+                document.getElementById('groupFilterContainer').style.display = 'block';
+            }
+        });
+
         // --- History Filter Logic ---
         function filterHistory() {
             const agentVal = document.getElementById('filterAgent').value.toUpperCase();
+            const groupVal = document.getElementById('filterGroup').value.toUpperCase(); // NEW
             const ipVal = document.getElementById('filterIp').value;
             const typeVal = document.getElementById('filterType').value;
             const resultVal = document.getElementById('filterResult').value;
@@ -289,57 +297,75 @@
             const rows = document.querySelectorAll('table tbody tr');
 
             rows.forEach(row => {
-                // Columns: 0=Name, 1=IP, 2=Action, 3=Result, 4=Time, 5=User, 6=Details
+                // Columns: 0=Name, 1=Group, 2=IP, 3=Action, 4=Result, 5=Time, 6=User, 7=Details
                 const agentText = row.cells[0].innerText.trim().toUpperCase();
-                const ipText = row.cells[1].innerText.trim();
-                const actionText = row.cells[2].innerText.trim(); // Contains Badge text
-                const resultText = row.cells[3].innerText.trim().toUpperCase();
-                const timeText = row.cells[4].innerText.trim();
+                const groupText = row.cells[1].innerText.trim().toUpperCase(); // NEW
+                const ipText = row.cells[2].innerText.trim();
+                const actionText = row.cells[3].innerText.trim(); // Contains Badge text
+                const resultText = row.cells[4].innerText.trim().toUpperCase();
+                const timeText = row.cells[5].innerText.trim();
                 const datePart = timeText.substring(0, 10);
-                const userText = row.cells[5].innerText.trim().toUpperCase();
+                const userText = row.cells[6].innerText.trim().toUpperCase();
 
-                // 1. Agent Name (Partial Match)
-                if (agentVal && !agentText.includes(agentVal)) {
-                    row.style.display = 'none';
-                    return;
-                }
-                // 1.5. IP Address
-                if (ipVal && !ipText.includes(ipVal)) {
-                    row.style.display = 'none';
-                    return;
-                }
-                // 2. Action Type
-                if (typeVal && !actionText.includes(typeVal)) {
-                    row.style.display = 'none';
-                    return;
-                }
-                // 3. Result Status
-                if (resultVal && !resultText.includes(resultVal)) {
-                    row.style.display = 'none';
-                    return;
-                }
-                // 4. User
-                if (userVal && !userText.includes(userVal)) {
-                    row.style.display = 'none';
-                    return;
-                }
-                // 5. Date Range
-                if (startDate && datePart < startDate) {
-                    row.style.display = 'none';
-                    return;
-                }
-                if (endDate && datePart > endDate) {
-                    row.style.display = 'none';
-                    return;
-                }
+                // Checks
+                if (agentVal && !agentText.includes(agentVal)) { row.style.display = 'none'; return; }
+                if (groupVal && !groupText.includes(groupVal)) { row.style.display = 'none'; return; } // NEW
+                if (ipVal && !ipText.includes(ipVal)) { row.style.display = 'none'; return; }
+
+                // For Action/Result (Exact or Includes - using includes for simplicity with text)
+                // However, Action is strict match in dropdown, so let's use includes to be safe with badge text
+                if (typeVal && !actionText.includes(typeVal)) { row.style.display = 'none'; return; }
+
+                // Result has 'Success', 'Failed' text
+                if (resultVal && !resultText.includes(resultVal)) { row.style.display = 'none'; return; }
+
+                if (userVal && !userText.includes(userVal)) { row.style.display = 'none'; return; }
+
+                if (startDate && datePart < startDate) { row.style.display = 'none'; return; }
+                if (endDate && datePart > endDate) { row.style.display = 'none'; return; }
 
                 row.style.display = '';
             });
         }
 
+        // 1. Agent Name (Partial Match) - REMOVED DUPLICATE LOGIC
+
         function resetHistoryFilter() {
             document.getElementById('historyFilterForm').reset();
+            // Manually clear inputs just in case
+            document.getElementById('filterAgent').value = '';
+            document.getElementById('filterGroup').value = '';
+            document.getElementById('filterIp').value = '';
+            document.getElementById('filterType').value = '';
+            document.getElementById('filterResult').value = '';
+            document.getElementById('filterUser').value = '';
+            document.getElementById('filterStartDate').value = '';
+            document.getElementById('filterEndDate').value = '';
             filterHistory();
+        }
+
+        function viewLog(btn) {
+            const row = btn.closest('tr');
+            if (!row) return;
+
+            // Extract Data (Updated for Group Column)
+            // 0=Name, 1=Group, 2=IP, 3=Action, 4=Result, 5=Time
+            const agentName = row.cells[0].innerText.trim();
+            const ip = row.cells[2].innerText.trim();
+            const actionBadge = row.cells[3].querySelector('.badge');
+            const action = actionBadge ? actionBadge.innerText.trim() : 'UNKNOWN';
+            const time = row.cells[5].innerText.trim();
+
+            // Set Title
+            document.getElementById('logModalTitle').innerText = `[${action}] ${agentName} (${ip})`;
+
+            // Generate Mock Log
+            const logContent = generateMockLog(action, time, agentName, ip);
+            document.getElementById('logContent').innerHTML = logContent;
+
+            // Show Modal
+            const logModal = new bootstrap.Modal(document.getElementById('logModal'));
+            logModal.show();
         }
     </script>
 

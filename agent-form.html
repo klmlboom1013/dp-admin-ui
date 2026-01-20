@@ -17,8 +17,20 @@
             <a class="navbar-brand fw-bold" href="./dashboard.html">
                 <i class="bi bi-rocket-takeoff-fill me-2"></i>Deploy System
             </a>
-            <div class="d-flex align-items-center text-white">
-                <small class="me-3">Admin (김관리)</small>
+            <div class="d-flex align-items-center text-white gap-3">
+                <!-- Context Simulator -->
+                <div class="d-flex align-items-center">
+                    <small class="text-white-50 me-2">Simulator:</small>
+                    <select class="form-select form-select-sm bg-dark text-white border-secondary"
+                        id="userContextSelect" style="width: 150px;">
+                        <option value="admin">Admin (Top)</option>
+                        <option value="master">User (Master)</option>
+                        <option value="report">User (Report)</option>
+                    </select>
+                </div>
+                <div class="vr bg-secondary"></div>
+                <!-- Current User Display -->
+                <small id="currentUserDisplay">Admin (김관리)</small>
                 <a href="./login.html" class="btn btn-sm btn-outline-light">Logout</a>
             </div>
         </div>
@@ -53,6 +65,17 @@
                                             placeholder="e.g. Pay-WAS-01" required>
                                     </div>
                                     <div class="col-md-6">
+                                        <label for="ownerGroup" class="form-label fw-bold">Owner Group <span
+                                                class="text-danger">*</span></label>
+                                        <div id="ownerGroupContainer">
+                                            <!-- Dynamically rendered based on user context -->
+                                            <input type="text" class="form-control" value="Loading..." readonly
+                                                disabled>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-md-12">
                                         <label for="agentDesc" class="form-label">Description</label>
                                         <input type="text" class="form-control" id="agentDesc" placeholder="서비스 용도 설명">
                                     </div>
@@ -134,7 +157,33 @@
     <script src="js/common.js"></script>
     <script>
         // URL 파라미터로 데이터 받아와서 폼 채우기 (데이터 연동 시뮬레이션)
+        // Mock Data for Simulation
+        const mockUsers = {
+            'admin': { id: 'admin', name: '김관리', level: 'TopAdmin', group: 'Admin' },
+            'master': { id: 'master', name: '이팀장', level: 'Master', group: 'PD' },
+            'report': { id: 'report', name: '박사원', level: 'Report', group: 'SO' }
+        };
+        const mockGroups = ['PD', 'SO', 'QA', 'OP', 'Common'];
+
+        let currentUser = mockUsers['admin'];
+
         document.addEventListener('DOMContentLoaded', () => {
+            // 1. Initialize Simulator
+            const contextSelect = document.getElementById('userContextSelect');
+            const userDisplay = document.getElementById('currentUserDisplay');
+
+            contextSelect.addEventListener('change', (e) => {
+                const userId = e.target.value;
+                currentUser = mockUsers[userId];
+                userDisplay.textContent = `${currentUser.name} (${currentUser.level})`;
+                updateFormBasedOnContext();
+                showToast(`User context switched to: ${currentUser.name} (${currentUser.level})`);
+            });
+
+            // 2. Initial Render
+            updateFormBasedOnContext();
+
+            // 3. Load URL Params
             const urlParams = new URLSearchParams(window.location.search);
 
             // Back Button Logic
@@ -155,6 +204,8 @@
             const ip = urlParams.get('ip');
             const port = urlParams.get('port');
             const serverType = urlParams.get('serverType');
+            // Assuming group is passed via URL or fetched (Simulation: default to PD if not present)
+            const group = urlParams.get('group');
 
             if (name) document.getElementById('agentName').value = name;
             if (desc) document.getElementById('agentDesc').value = desc;
@@ -162,11 +213,50 @@
             if (port) document.getElementById('servicePort').value = port;
             if (serverType) document.getElementById('serverType').value = serverType;
 
+            // Set initial group if editing (stored in dataset for update logic to use)
+            if (group) {
+                document.getElementById('ownerGroupContainer').dataset.initialGroup = group;
+            } else if (name) {
+                // Mock existing group for edit mode if not provided
+                document.getElementById('ownerGroupContainer').dataset.initialGroup = 'PD';
+            }
+
+            // Re-run update to apply value to the newly rendered field
+            updateFormBasedOnContext();
+
             // 수정 모드인 경우 타이틀 변경 (옵션)
             if (name) {
                 document.querySelector('h4').textContent = 'Agent 수정';
             }
         });
+
+        function updateFormBasedOnContext() {
+            const container = document.getElementById('ownerGroupContainer');
+            const initialGroup = container.dataset.initialGroup || '';
+            const isAdmin = currentUser.level === 'TopAdmin';
+
+            let html = '';
+
+            if (isAdmin) {
+                // Admin: Select Box
+                html = `<select class="form-select" id="ownerGroup">
+                            <option value="" ${!initialGroup ? 'selected' : ''}>Choose...</option>`;
+                mockGroups.forEach(g => {
+                    const selected = g === initialGroup ? 'selected' : '';
+                    html += `<option value="${g}" ${selected}>${g}</option>`;
+                });
+                html += `</select>`;
+            } else {
+                // User: Read-only Input (User's Group)
+                // If editing, it should show valid group. But if creating, it shows user's group.
+                // Requirement: "Show their account group code... Master/Report/Content cannot edit"
+                const displayGroup = initialGroup || currentUser.group;
+                html = `<input type="text" class="form-control" id="ownerGroup" value="${displayGroup}" readonly>`;
+                // Add hidden input to submit the value if needed, or rely on the readonly input
+            }
+
+            container.innerHTML = html;
+        }
     </script>
 </body>
 

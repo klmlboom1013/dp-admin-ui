@@ -244,12 +244,12 @@ function updateAdminMenuVisibility(level) {
     if (!level && typeof currentUser !== 'undefined') {
         level = currentUser.level;
     }
-    // Default to TopAdmin if still unknown (Preserve existing behavior for static pages)
-    if (!level) level = 'TopAdmin';
+    // Default to Admin if still unknown (Preserve existing behavior for static pages)
+    if (!level) level = 'Admin';
 
     const items = document.querySelectorAll('.menu-admin-only');
     items.forEach(item => {
-        if (level === 'TopAdmin') {
+        if (level === 'Admin') {
             // Remove inline style to revert to CSS default (usually visible)
             item.style.display = '';
         } else {
