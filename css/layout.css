@@ -1,7 +1,8 @@
 /* 공통 레이아웃 스타일 */
 body {
     background-color: #f8f9fa;
-    min-height: 100vh;
+    height: 100vh;
+    overflow: hidden;
 }
 
 /* 네비게이션 바 */

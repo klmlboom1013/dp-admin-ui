@@ -41,6 +41,7 @@
   - **Group**: 소속 그룹 뱃지.
   - **IP Address**: IP 주소.
   - **Status**: 상태 뱃지.
+  - **Last Update**: 마지막 통신 시간 (YYYY-MM-DD HH:MM).
   - **Actions**:
     - **Console**: `agent-details.html`로 이동 (`from=group` 파라미터 포함).
     - **Edit**: `agent-form.html`로 이동.

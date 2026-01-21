@@ -7,7 +7,8 @@
 const STORAGE_KEYS = {
     MENU_PERMS: 'dp_admin_menu_perms',
     AGENT_PERMS: 'dp_admin_agent_perms',
-    OPTIONS: 'dp_admin_options'
+    OPTIONS: 'dp_admin_options',
+    DASHBOARD_OPTIONS: 'dp_admin_dashboard_options'
 };
 
 // Default Configuration
@@ -28,6 +29,11 @@ const DEFAULTS = {
         levels: ['Admin', 'Master', 'Content', 'Report'],
         depts: ['Tech1실', 'Tech2실', 'Tech실', 'CTO', '서비스운영팀'],
         groups: ['PD', 'SO', 'QA', 'OP', 'Common']
+    },
+    dashboardOptions: {
+        agents: { show: true, count: 5, order: 2 },
+        history: { show: true, count: 10, order: 3 },
+        agentGroup: { show: true, count: 5, order: 1 }
     }
 };
 
@@ -35,7 +41,8 @@ const DEFAULTS = {
 let config = {
     menuPerms: {},
     agentPerms: {},
-    options: {}
+    options: {},
+    dashboardOptions: {}
 };
 
 // Config Loading
@@ -47,6 +54,9 @@ function loadConfig() {
     config.menuPerms = storedMenu ? JSON.parse(storedMenu) : JSON.parse(JSON.stringify(DEFAULTS.menuPerms));
     config.agentPerms = storedAgent ? JSON.parse(storedAgent) : JSON.parse(JSON.stringify(DEFAULTS.agentPerms));
     config.options = storedOptions ? JSON.parse(storedOptions) : JSON.parse(JSON.stringify(DEFAULTS.options));
+
+    const storedDashboard = localStorage.getItem(STORAGE_KEYS.DASHBOARD_OPTIONS);
+    config.dashboardOptions = storedDashboard ? JSON.parse(storedDashboard) : JSON.parse(JSON.stringify(DEFAULTS.dashboardOptions));
 
     // Merge new levels if they exist in options but not in perms (Handling newly added levels)
     config.options.levels.forEach(lvl => {
@@ -90,6 +100,7 @@ function saveConfigToStorage() {
     localStorage.setItem(STORAGE_KEYS.MENU_PERMS, JSON.stringify(config.menuPerms));
     localStorage.setItem(STORAGE_KEYS.AGENT_PERMS, JSON.stringify(config.agentPerms));
     localStorage.setItem(STORAGE_KEYS.OPTIONS, JSON.stringify(config.options));
+    localStorage.setItem(STORAGE_KEYS.DASHBOARD_OPTIONS, JSON.stringify(config.dashboardOptions));
 }
 
 // --- Render Logic ---
@@ -190,6 +201,44 @@ function renderUserOptions() {
     });
 }
 
+function renderDashboardOptions() {
+    const tbody = document.getElementById('dashboardOptionsBody');
+    tbody.innerHTML = '';
+
+    const items = [
+        { key: 'agents', label: 'Agents' },
+        { key: 'history', label: 'Action History' },
+        { key: 'agentGroup', label: 'Agent Group' }
+    ];
+
+    items.forEach(item => {
+        const opt = config.dashboardOptions[item.key];
+        // Safety check if new key added to defaults but not in storage
+        const show = opt ? opt.show : true;
+        const count = opt ? opt.count : 5;
+        const order = opt ? (opt.order || (item.key === 'agentGroup' ? 1 : (item.key === 'agents' ? 2 : 3))) : 1;
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td class="text-start ps-4 fw-bold">${item.label}</td>
+            <td>
+                <div class="form-check form-switch d-flex justify-content-center">
+                    <input class="form-check-input" type="checkbox" id="dashOpt-${item.key}-show" ${show ? 'checked' : ''}>
+                </div>
+            </td>
+            <td>
+                <input type="number" class="form-control form-control-sm d-inline-block text-center"
+                    id="dashOpt-${item.key}-count" style="width: 80px;" min="1" max="50" value="${count}">
+            </td>
+            <td>
+                 <input type="number" class="form-control form-control-sm d-inline-block text-center"
+                    id="dashOpt-${item.key}-order" style="width: 80px;" min="1" max="10" value="${order}">
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
 // --- Action Handlers ---
 
 function updatePerm(type, level, key, value) {
@@ -208,6 +257,17 @@ function saveMenuPerms() {
 function saveAgentPerms() {
     saveConfigToStorage();
     showToast('Agent 실행 권한이 저장되었습니다.', 'success');
+}
+
+function saveDashboardOptions() {
+    const items = ['agents', 'history', 'agentGroup'];
+    items.forEach(key => {
+        const show = document.getElementById(`dashOpt-${key}-show`).checked;
+        const count = parseInt(document.getElementById(`dashOpt-${key}-count`).value, 10) || 5;
+        config.dashboardOptions[key] = { show, count };
+    });
+    saveConfigToStorage();
+    showToast('Dashboard 설정이 저장되었습니다.', 'success');
 }
 
 function addOptionItem(type) {
@@ -275,4 +335,5 @@ document.addEventListener("DOMContentLoaded", function () {
     renderMenuPerms();
     renderAgentPerms();
     renderUserOptions();
+    renderDashboardOptions();
 });

@@ -14,7 +14,7 @@
 
 ## 3. 화면 구성 및 탭(Tab) 구조
 
-3개의 탭으로 구성되어 있다.
+4개의 탭으로 구성되어 있다.
 
 ### 3.1 메뉴 접근 권한 (Menu Permissions)
 
@@ -53,6 +53,17 @@
   - **삭제**: 리스트 아이템 우측 [x] 버튼 -> Confirm -> 삭제. (단, `Admin` 등급은 삭제 불가)
 - **데이터 Sync**: 변경 즉시 `dp_admin_options` 키로 로컬 스토리지에 저장 및 반영.
 
+### 3.4 대시보드 관리 (Dashboard Management)
+
+대시보드 화면의 섹션별 표시 여부, 개수, 순서를 설정한다. 'Dashboard Display Options' 카드로 구성된다.
+
+- **설정 항목 (각 섹션별)**:
+  - **Agents**, **Action History**, **Agent Group** 3개 섹션 대상.
+  - **Show (Checkbox)**: 해당 섹션을 대시보드에 표시할지 여부.
+  - **Count (Input)**: 리스트에 표시할 최대 행(Row) 개수. (초과 시 잘림)
+  - **Order (Input)**: 섹션 간의 표시 순서. (낮은 숫자가 상단에 위치)
+- **저장**: [변경사항 저장] 버튼 클릭 시 `dp_admin_dashboard_options` 키로 로컬 스토리지에 저장.
+
 ## 4. 데이터 로직 (Settings Logic)
 
 `js/settings.js`를 통해 로컬 스토리지 기반으로 동작한다.
@@ -62,6 +73,7 @@
 - `dp_admin_menu_perms`: 메뉴 접근 권한 객체.
 - `dp_admin_agent_perms`: 에이전트 제어 권한 객체.
 - `dp_admin_options`: 공통 코드(Levels, Depts, Groups) 배열 객체.
+- `dp_admin_dashboard_options`: 대시보드 설정 객체.
 
 ### 4.2 기본값 (Defaults) - 초기 구동 시 로드
 
@@ -69,7 +81,7 @@
 | :--- | :--- | :--- |
 | **Admin** | All(O) | All(O) |
 | **Master** | All(O) | PROD제외 All(O) |
-| **Content**| User/Group(X) | View/Action(O), Edit/Bulk/PROD(X) |
+| **Content** | User/Group(X) | View/Action(O), Edit/Bulk/PROD(X) |
 | **Report** | User/Group(X) | View(O), 나머지(X) |
 
 ### 4.3 마이그레이션 로직

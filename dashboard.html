@@ -61,291 +61,434 @@
                 </div>
             </div>
 
+            <!-- Agent Group -->
+            <div id="dashboard-group-area">
+                <h5 class="mb-3">Agent Group</h5>
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-body p-0">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th scope="col" class="ps-4" style="width: 25%">Group Name</th>
+                                    <th scope="col" style="width: 10%">Group</th>
+                                    <th scope="col" style="width: 45%">Description</th>
+                                    <th scope="col" style="width: 20%" class="text-end pe-4">Agent Count</th>
+                                </tr>
+                            </thead>
+                            <tbody id="groupTableBody">
+                                <tr style="cursor: pointer;"
+                                    onclick="window.location.href='./agent-group-details.html?id=G-001&name=Payment-Group&desc=Payment Related Agents'">
+                                    <td class="ps-4">
+                                        <div class="fw-bold">Payment-Group</div>
+                                    </td>
+                                    <td><span class="badge rounded-pill text-bg-secondary bg-opacity-75">PD</span></td>
+                                    <td class="text-muted">Payment Related Agents</td>
+                                    <td class="text-end pe-4">
+                                        <span class="badge bg-primary rounded-pill">4 Agents</span>
+                                    </td>
+                                </tr>
+                                <tr style="cursor: pointer;"
+                                    onclick="window.location.href='./agent-group-details.html?id=G-002&name=Order-Group&desc=Order Processing Agents'">
+                                    <td class="ps-4">
+                                        <div class="fw-bold">Order-Group</div>
+                                    </td>
+                                    <td><span class="badge rounded-pill text-bg-secondary bg-opacity-75">SO</span></td>
+                                    <td class="text-muted">Order Processing Agents</td>
+                                    <td class="text-end pe-4">
+                                        <span class="badge bg-primary rounded-pill">2 Agents</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
             <!-- Agent List (Status Overview) -->
-            <h5 class="mb-3">Agent List</h5>
-            <div class="card shadow-sm border-0 mb-4">
-                <div class="card-body p-0">
-                    <table class="table table-hover align-middle mb-0">
-                        <thead class="table-light">
-                            <tr>
-                                <th scope="col" class="ps-4" style="width: 25%">Name</th>
-                                <th scope="col" style="width: 10%">Group</th>
-                                <th scope="col" style="width: 10%">Status</th>
-                                <th scope="col" style="width: 10%"></th> <!-- Empty for alignment -->
-                                <th scope="col" style="width: 20%">IP Address</th>
-                                <th scope="col" style="width: 15%">Last Update</th>
-                                <th scope="col" class="text-end pe-4" style="width: 10%">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody id="agentListTableBody">
-                            <tr data-status="RUNNING">
-                                <td class="ps-4">
-                                    <div class="fw-bold">
-                                        Pay-WAS-01
-                                        <span class="badge bg-light text-secondary border ms-1">DEV</span>
-                                    </div>
-                                </td>
-                                <td><span class="badge rounded-pill text-bg-secondary bg-opacity-75">PD</span></td>
-                                <td><span
-                                        class="badge bg-success bg-opacity-10 text-success border border-success">RUNNING</span>
-                                </td>
-                                <td></td> <!-- Empty for alignment -->
-                                <td>192.168.0.10:8080</td>
-                                <td>2024-01-14 14:00</td>
-                                <td class="text-end pe-4">
-                                    <a href="agent-details.html" class="btn btn-sm btn-outline-info" title="Console"><i
-                                            class="bi bi-terminal"></i></a>
-                                </td>
-                            </tr>
-                            <tr data-status="STOPPED">
-                                <td class="ps-4">
-                                    <div class="fw-bold">
-                                        Pay-WAS-02
-                                        <span class="badge bg-light text-secondary border ms-1">STG</span>
-                                    </div>
-                                </td>
-                                <td><span class="badge rounded-pill text-bg-secondary bg-opacity-75">PD</span></td>
-                                <td><span
-                                        class="badge bg-danger bg-opacity-10 text-danger border border-danger">STOPPED</span>
-                                </td>
-                                <td></td> <!-- Empty for alignment -->
-                                <td>192.168.0.11:8080</td>
-                                <td>2024-01-14 14:05</td>
-                                <td class="text-end pe-4">
-                                    <a href="agent-details.html" class="btn btn-sm btn-outline-info" title="Console"><i
-                                            class="bi bi-terminal"></i></a>
-                                </td>
-                            </tr>
-                            <tr data-status="STOPPING">
-                                <td class="ps-4">
-                                    <div class="fw-bold">
-                                        Order-API-01
-                                        <span
-                                            class="badge bg-primary bg-opacity-10 text-primary border border-primary ms-1">PROD</span>
-                                    </div>
-                                </td>
-                                <td><span class="badge rounded-pill text-bg-secondary bg-opacity-75">SO</span></td>
-                                <td><span
-                                        class="badge bg-danger bg-opacity-10 text-danger border border-danger">STOPPING</span>
-                                </td>
-                                <td></td> <!-- Empty for alignment -->
-                                <td>10.20.30.42:8080</td>
-                                <td>2024-01-19 09:30</td>
-                                <td class="text-end pe-4">
-                                    <a href="agent-details.html" class="btn btn-sm btn-outline-info" title="Console"><i
-                                            class="bi bi-terminal"></i></a>
-                                </td>
-                            </tr>
-                            <tr data-status="RUNNING">
-                                <td class="ps-4">
-                                    <div class="fw-bold">
-                                        Pay-WAS-03
-                                        <span class="badge bg-light text-secondary border ms-1">STG</span>
-                                    </div>
-                                </td>
-                                <td><span class="badge rounded-pill text-bg-secondary bg-opacity-75">PD</span></td>
-                                <td><span
-                                        class="badge bg-success bg-opacity-10 text-success border border-success">RUNNING</span>
-                                </td>
-                                <td></td> <!-- Empty for alignment -->
-                                <td>192.168.0.12:8080</td>
-                                <td>2024-01-19 10:00</td>
-                                <td class="text-end pe-4">
-                                    <a href="agent-details.html" class="btn btn-sm btn-outline-info" title="Console"><i
-                                            class="bi bi-terminal"></i></a>
-                                </td>
-                            </tr>
-                            <tr data-status="STARTING">
-                                <td class="ps-4">
-                                    <div class="fw-bold">
-                                        Order-API-02
-                                        <span
-                                            class="badge bg-primary bg-opacity-10 text-primary border border-primary ms-1">PROD</span>
-                                    </div>
-                                </td>
-                                <td><span class="badge rounded-pill text-bg-secondary bg-opacity-75">SO</span></td>
-                                <td><span
-                                        class="badge bg-info bg-opacity-10 text-info border border-info">STARTING</span>
-                                </td>
-                                <td></td> <!-- Empty for alignment -->
-                                <td>10.20.30.43:8080</td>
-                                <td>2024-01-19 11:30</td>
-                                <td class="text-end pe-4">
-                                    <a href="agent-details.html" class="btn btn-sm btn-outline-info" title="Console"><i
-                                            class="bi bi-terminal"></i></a>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+            <!-- Agent List (Status Overview) -->
+            <div id="dashboard-agents-area">
+                <h5 class="mb-3">Agents</h5>
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-body p-0">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th scope="col" class="ps-4" style="width: 25%">Name</th>
+                                    <th scope="col" style="width: 10%">Group</th>
+                                    <th scope="col" style="width: 10%">Status</th>
+                                    <th scope="col" style="width: 10%"></th> <!-- Empty for alignment -->
+                                    <th scope="col" style="width: 20%">IP Address</th>
+                                    <th scope="col" style="width: 15%">Last Update</th>
+                                    <th scope="col" class="text-end pe-4" style="width: 10%">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="agentListTableBody">
+                                <tr data-status="RUNNING">
+                                    <td class="ps-4">
+                                        <div class="fw-bold">
+                                            Pay-WAS-01
+                                            <span class="badge bg-light text-secondary border ms-1">DEV</span>
+                                        </div>
+                                    </td>
+                                    <td><span class="badge rounded-pill text-bg-secondary bg-opacity-75">PD</span></td>
+                                    <td><span
+                                            class="badge bg-success bg-opacity-10 text-success border border-success">RUNNING</span>
+                                    </td>
+                                    <td></td> <!-- Empty for alignment -->
+                                    <td>192.168.0.10:8080</td>
+                                    <td>2024-01-14 14:00</td>
+                                    <td class="text-end pe-4">
+                                        <a href="agent-details.html" class="btn btn-sm btn-outline-info"
+                                            title="Console"><i class="bi bi-terminal"></i></a>
+                                    </td>
+                                </tr>
+                                <tr data-status="STOPPED">
+                                    <td class="ps-4">
+                                        <div class="fw-bold">
+                                            Pay-WAS-02
+                                            <span class="badge bg-light text-secondary border ms-1">STG</span>
+                                        </div>
+                                    </td>
+                                    <td><span class="badge rounded-pill text-bg-secondary bg-opacity-75">PD</span></td>
+                                    <td><span
+                                            class="badge bg-danger bg-opacity-10 text-danger border border-danger">STOPPED</span>
+                                    </td>
+                                    <td></td> <!-- Empty for alignment -->
+                                    <td>192.168.0.11:8080</td>
+                                    <td>2024-01-14 14:05</td>
+                                    <td class="text-end pe-4">
+                                        <a href="agent-details.html" class="btn btn-sm btn-outline-info"
+                                            title="Console"><i class="bi bi-terminal"></i></a>
+                                    </td>
+                                </tr>
+                                <tr data-status="STOPPING">
+                                    <td class="ps-4">
+                                        <div class="fw-bold">
+                                            Order-API-01
+                                            <span
+                                                class="badge bg-primary bg-opacity-10 text-primary border border-primary ms-1">PROD</span>
+                                        </div>
+                                    </td>
+                                    <td><span class="badge rounded-pill text-bg-secondary bg-opacity-75">SO</span></td>
+                                    <td><span
+                                            class="badge bg-danger bg-opacity-10 text-danger border border-danger">STOPPING</span>
+                                    </td>
+                                    <td></td> <!-- Empty for alignment -->
+                                    <td>10.20.30.42:8080</td>
+                                    <td>2024-01-19 09:30</td>
+                                    <td class="text-end pe-4">
+                                        <a href="agent-details.html" class="btn btn-sm btn-outline-info"
+                                            title="Console"><i class="bi bi-terminal"></i></a>
+                                    </td>
+                                </tr>
+                                <tr data-status="RUNNING">
+                                    <td class="ps-4">
+                                        <div class="fw-bold">
+                                            Pay-WAS-03
+                                            <span class="badge bg-light text-secondary border ms-1">STG</span>
+                                        </div>
+                                    </td>
+                                    <td><span class="badge rounded-pill text-bg-secondary bg-opacity-75">PD</span></td>
+                                    <td><span
+                                            class="badge bg-success bg-opacity-10 text-success border border-success">RUNNING</span>
+                                    </td>
+                                    <td></td> <!-- Empty for alignment -->
+                                    <td>192.168.0.12:8080</td>
+                                    <td>2024-01-19 10:00</td>
+                                    <td class="text-end pe-4">
+                                        <a href="agent-details.html" class="btn btn-sm btn-outline-info"
+                                            title="Console"><i class="bi bi-terminal"></i></a>
+                                    </td>
+                                </tr>
+                                <tr data-status="STARTING">
+                                    <td class="ps-4">
+                                        <div class="fw-bold">
+                                            Order-API-02
+                                            <span
+                                                class="badge bg-primary bg-opacity-10 text-primary border border-primary ms-1">PROD</span>
+                                        </div>
+                                    </td>
+                                    <td><span class="badge rounded-pill text-bg-secondary bg-opacity-75">SO</span></td>
+                                    <td><span
+                                            class="badge bg-info bg-opacity-10 text-info border border-info">STARTING</span>
+                                    </td>
+                                    <td></td> <!-- Empty for alignment -->
+                                    <td>10.20.30.43:8080</td>
+                                    <td>2024-01-19 11:30</td>
+                                    <td class="text-end pe-4">
+                                        <a href="agent-details.html" class="btn btn-sm btn-outline-info"
+                                            title="Console"><i class="bi bi-terminal"></i></a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
             <!-- Agent Action History (Recent 5) -->
-            <h5 class="mb-3">Agent Action History</h5>
-            <div class="card shadow-sm border-0 mb-4">
-                <div class="card-body p-0">
-                    <table class="table table-hover align-middle mb-0">
-                        <thead class="table-light">
-                            <tr>
-                                <th scope="col" class="ps-4" style="width: 25%">Name</th>
-                                <th scope="col" style="width: 10%">Group</th>
-                                <th scope="col" style="width: 10%">Action</th>
-                                <th scope="col" style="width: 10%">Result</th>
-                                <th scope="col" style="width: 20%">IP Address</th>
-                                <th scope="col" style="width: 15%">Time</th>
-                                <th scope="col" class="text-end pe-4" style="width: 10%">User</th>
-                            </tr>
-                        </thead>
-                        <tbody id="historyTableBody">
-                            <tr>
-                                <td class="ps-4">
-                                    <div class="fw-bold">
-                                        Pay-WAS-01
-                                        <span class="badge bg-light text-secondary border ms-1">DEV</span>
-                                    </div>
-                                </td>
-                                <td><span class="badge rounded-pill text-bg-secondary bg-opacity-75">PD</span></td>
-                                <td><span
-                                        class="badge bg-success bg-opacity-10 text-success border border-success">START</span>
-                                </td>
-                                <td><span class="text-success fw-bold"><i
-                                            class="bi bi-check-circle-fill me-1"></i>Success</span></td>
-                                <td>192.168.0.10:8080</td>
-                                <td class="text-muted small">2024-01-20 10:00:00</td>
-                                <td class="text-end pe-4">김관리</td>
-                            </tr>
-                            <tr>
-                                <td class="ps-4">
-                                    <div class="fw-bold">
-                                        Order-API-01
-                                        <span
-                                            class="badge bg-primary bg-opacity-10 text-primary border border-primary ms-1">PROD</span>
-                                    </div>
-                                </td>
-                                <td><span class="badge rounded-pill text-bg-secondary bg-opacity-75">SO</span></td>
-                                <td><span
-                                        class="badge bg-warning bg-opacity-10 text-warning border border-warning">RESTART</span>
-                                </td>
-                                <td><span class="text-success fw-bold"><i
-                                            class="bi bi-check-circle-fill me-1"></i>Success</span></td>
-                                <td>10.20.30.42:8080</td>
-                                <td class="text-muted small">2024-01-20 09:55:00</td>
-                                <td class="text-end pe-4">이팀장</td>
-                            </tr>
-                            <tr>
-                                <td class="ps-4">
-                                    <div class="fw-bold">
-                                        Pay-WAS-02
-                                        <span class="badge bg-light text-secondary border ms-1">STG</span>
-                                    </div>
-                                </td>
-                                <td><span class="badge rounded-pill text-bg-secondary bg-opacity-75">PD</span></td>
-                                <td><span
-                                        class="badge bg-danger bg-opacity-10 text-danger border border-danger">STOP</span>
-                                </td>
-                                <td><span class="text-success fw-bold"><i
-                                            class="bi bi-check-circle-fill me-1"></i>Success</span></td>
-                                <td>192.168.0.11:8080</td>
-                                <td class="text-muted small">2024-01-20 09:30:00</td>
-                                <td class="text-end pe-4">김관리</td>
-                            </tr>
-                            <tr>
-                                <td class="ps-4">
-                                    <div class="fw-bold">
-                                        Pay-WAS-01
-                                        <span class="badge bg-light text-secondary border ms-1">DEV</span>
-                                    </div>
-                                </td>
-                                <td><span class="badge rounded-pill text-bg-secondary bg-opacity-75">PD</span></td>
-                                <td><span
-                                        class="badge bg-success bg-opacity-10 text-success border border-success">START</span>
-                                </td>
-                                <td><span class="text-danger fw-bold"><i
-                                            class="bi bi-x-circle-fill me-1"></i>Fail</span></td>
-                                <td>192.168.0.10:8080</td>
-                                <td class="text-muted small">2024-01-20 09:10:00</td>
-                                <td class="text-end pe-4">박사원</td>
-                            </tr>
-                            <tr>
-                                <td class="ps-4">
-                                    <div class="fw-bold">
-                                        Order-API-01
-                                        <span
-                                            class="badge bg-primary bg-opacity-10 text-primary border border-primary ms-1">PROD</span>
-                                    </div>
-                                </td>
-                                <td><span class="badge rounded-pill text-bg-secondary bg-opacity-75">SO</span></td>
-                                <td><span
-                                        class="badge bg-danger bg-opacity-10 text-danger border border-danger">STOP</span>
-                                </td>
-                                <td><span class="text-success fw-bold"><i
-                                            class="bi bi-check-circle-fill me-1"></i>Success</span></td>
-                                <td>10.20.30.42:8080</td>
-                                <td class="text-muted small">2024-01-20 08:45:00</td>
-                                <td class="text-end pe-4">이팀장</td>
-                            </tr>
-                        </tbody>
-                    </table>
+            <!-- Agent Action History (Recent 5) -->
+            <div id="dashboard-history-area">
+                <h5 class="mb-3">Action History</h5>
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-body p-0">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th scope="col" class="ps-4" style="width: 25%">Name</th>
+                                    <th scope="col" style="width: 10%">Group</th>
+                                    <th scope="col" style="width: 10%">Action</th>
+                                    <th scope="col" style="width: 10%">Result</th>
+                                    <th scope="col" style="width: 20%">IP Address</th>
+                                    <th scope="col" style="width: 15%">Time</th>
+                                    <th scope="col" class="text-end pe-4" style="width: 10%">User</th>
+                                </tr>
+                            </thead>
+                            <tbody id="historyTableBody">
+                                <tr>
+                                    <td class="ps-4">
+                                        <div class="fw-bold">
+                                            Pay-WAS-01
+                                            <span class="badge bg-light text-secondary border ms-1">DEV</span>
+                                        </div>
+                                    </td>
+                                    <td><span class="badge rounded-pill text-bg-secondary bg-opacity-75">PD</span></td>
+                                    <td><span
+                                            class="badge bg-success bg-opacity-10 text-success border border-success">START</span>
+                                    </td>
+                                    <td><span class="text-success fw-bold"><i
+                                                class="bi bi-check-circle-fill me-1"></i>Success</span></td>
+                                    <td>192.168.0.10:8080</td>
+                                    <td class="text-muted small">2024-01-20 10:00:00</td>
+                                    <td class="text-end pe-4">김관리</td>
+                                </tr>
+                                <tr>
+                                    <td class="ps-4">
+                                        <div class="fw-bold">
+                                            Order-API-01
+                                            <span
+                                                class="badge bg-primary bg-opacity-10 text-primary border border-primary ms-1">PROD</span>
+                                        </div>
+                                    </td>
+                                    <td><span class="badge rounded-pill text-bg-secondary bg-opacity-75">SO</span></td>
+                                    <td><span
+                                            class="badge bg-warning bg-opacity-10 text-warning border border-warning">RESTART</span>
+                                    </td>
+                                    <td><span class="text-success fw-bold"><i
+                                                class="bi bi-check-circle-fill me-1"></i>Success</span></td>
+                                    <td>10.20.30.42:8080</td>
+                                    <td class="text-muted small">2024-01-20 09:55:00</td>
+                                    <td class="text-end pe-4">이팀장</td>
+                                </tr>
+                                <tr>
+                                    <td class="ps-4">
+                                        <div class="fw-bold">
+                                            Pay-WAS-02
+                                            <span class="badge bg-light text-secondary border ms-1">STG</span>
+                                        </div>
+                                    </td>
+                                    <td><span class="badge rounded-pill text-bg-secondary bg-opacity-75">PD</span></td>
+                                    <td><span
+                                            class="badge bg-danger bg-opacity-10 text-danger border border-danger">STOP</span>
+                                    </td>
+                                    <td><span class="text-success fw-bold"><i
+                                                class="bi bi-check-circle-fill me-1"></i>Success</span></td>
+                                    <td>192.168.0.11:8080</td>
+                                    <td class="text-muted small">2024-01-20 09:30:00</td>
+                                    <td class="text-end pe-4">김관리</td>
+                                </tr>
+                                <tr>
+                                    <td class="ps-4">
+                                        <div class="fw-bold">
+                                            Pay-WAS-01
+                                            <span class="badge bg-light text-secondary border ms-1">DEV</span>
+                                        </div>
+                                    </td>
+                                    <td><span class="badge rounded-pill text-bg-secondary bg-opacity-75">PD</span></td>
+                                    <td><span
+                                            class="badge bg-success bg-opacity-10 text-success border border-success">START</span>
+                                    </td>
+                                    <td><span class="text-danger fw-bold"><i
+                                                class="bi bi-x-circle-fill me-1"></i>Fail</span></td>
+                                    <td>192.168.0.10:8080</td>
+                                    <td class="text-muted small">2024-01-20 09:10:00</td>
+                                    <td class="text-end pe-4">박사원</td>
+                                </tr>
+                                <tr>
+                                    <td class="ps-4">
+                                        <div class="fw-bold">
+                                            Order-API-01
+                                            <span
+                                                class="badge bg-primary bg-opacity-10 text-primary border border-primary ms-1">PROD</span>
+                                        </div>
+                                    </td>
+                                    <td><span class="badge rounded-pill text-bg-secondary bg-opacity-75">SO</span></td>
+                                    <td><span
+                                            class="badge bg-danger bg-opacity-10 text-danger border border-danger">STOP</span>
+                                    </td>
+                                    <td><span class="text-success fw-bold"><i
+                                                class="bi bi-check-circle-fill me-1"></i>Success</span></td>
+                                    <td>10.20.30.42:8080</td>
+                                    <td class="text-muted small">2024-01-20 08:45:00</td>
+                                    <td class="text-end pe-4">이팀장</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-        <script src="js/common.js"></script>
-        <script>
-            document.addEventListener('DOMContentLoaded', () => {
-                // Delay slightly to ensure global header.js runs? 
-                // Actually Header includes script at the top/middle. 
-                // Common pattern: check global user on load.
-                if (typeof currentUser !== 'undefined') updateDashboardData();
-            });
-
-            // Dashboard Context Logic
-            document.addEventListener('userContextChanged', (e) => {
-                updateDashboardData();
-                showToast(`[Dashboard] View updated for: ${currentUser.level} (${currentUser.name})`);
-            });
-
-            function updateDashboardData() {
-                // 1. Filter History Table
-                const rows = document.querySelectorAll('#historyTableBody tr');
-                rows.forEach(row => {
-                    // Column 1 is Group (index 1) after our edit
-                    const groupCell = row.cells[1];
-                    if (!groupCell) return;
-
-                    const groupCode = groupCell.innerText.trim();
-
-                    if (currentUser.level !== 'Admin' && groupCode !== currentUser.group) {
-                        row.style.display = 'none';
-                    } else {
-                        row.style.display = '';
-                    }
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+            <script src="js/common.js"></script>
+            <script>
+                document.addEventListener('DOMContentLoaded', () => {
+                    // Delay slightly to ensure global header.js runs? 
+                    // Actually Header includes script at the top/middle. 
+                    // Common pattern: check global user on load.
+                    if (typeof currentUser !== 'undefined') updateDashboardData();
                 });
 
-                // 2. Filter Agent List Table
-                const agentRows = document.querySelectorAll('#agentListTableBody tr');
-                agentRows.forEach(row => {
-                    // Column 1 is Group (index 1)
-                    const groupCell = row.cells[1];
-                    if (!groupCell) return;
-
-                    const groupCode = groupCell.innerText.trim();
-
-                    if (currentUser.level !== 'Admin' && groupCode !== currentUser.group) {
-                        row.style.display = 'none';
-                    } else {
-                        row.style.display = '';
-                    }
+                // Dashboard Context Logic
+                document.addEventListener('userContextChanged', (e) => {
+                    updateDashboardData();
+                    showToast(`[Dashboard] View updated for: ${currentUser.level} (${currentUser.name})`);
                 });
-            }
 
-            // Helper toast (if not in common.js globally available yet for this page type)
-            // Or reuse common one if existing.
-            // We will assume 'showToast' is global or we use a local simple one.
-            // Actually, let's use the one we added in HTML if exists, or global.
-            // js/common.js usually has 'showToast'.
-        </script>
+                function updateDashboardData() {
+                    applyDashboardSettings();
+
+                    // 1. Filter History Table
+                    const rows = document.querySelectorAll('#historyTableBody tr');
+                    let historyVisibleCount = 0;
+                    // Get Count limit from settings
+                    const settings = JSON.parse(localStorage.getItem('dp_admin_dashboard_options') || '{}');
+                    const historyLimit = (settings.history && settings.history.count) ? settings.history.count : 5;
+
+                    rows.forEach(row => {
+                        // Column 1 is Group (index 1) after our edit
+                        const groupCell = row.cells[1];
+                        if (!groupCell) return;
+
+                        const groupCode = groupCell.innerText.trim();
+                        let matchesGroup = (currentUser.level === 'Admin' || groupCode === currentUser.group);
+
+                        if (matchesGroup) {
+                            historyVisibleCount++;
+                            if (historyVisibleCount <= historyLimit) {
+                                row.style.display = '';
+                            } else {
+                                row.style.display = 'none';
+                            }
+                        } else {
+                            row.style.display = 'none';
+                        }
+                    });
+
+                    // 2. Filter Agent List Table
+                    const agentRows = document.querySelectorAll('#agentListTableBody tr');
+                    let agentVisibleCount = 0;
+                    const agentLimit = (settings.agents && settings.agents.count) ? settings.agents.count : 5;
+
+                    agentRows.forEach(row => {
+                        // Column 1 is Group (index 1)
+                        const groupCell = row.cells[1];
+                        if (!groupCell) return;
+
+                        const groupCode = groupCell.innerText.trim();
+                        let matchesGroup = (currentUser.level === 'Admin' || groupCode === currentUser.group);
+
+                        if (matchesGroup) {
+                            agentVisibleCount++;
+                            if (agentVisibleCount <= agentLimit) {
+                                row.style.display = '';
+                            } else {
+                                row.style.display = 'none';
+                            }
+                        } else {
+                            row.style.display = 'none';
+                        }
+                    });
+
+                    // 3. Filter Agent Group Table
+                    const groupRows = document.querySelectorAll('#groupTableBody tr');
+                    let groupVisibleCount = 0;
+                    const groupLimit = (settings.agentGroup && settings.agentGroup.count) ? settings.agentGroup.count : 5;
+
+                    groupRows.forEach(row => {
+                        // Column 1 is Group (index 1)
+                        const groupCell = row.cells[1];
+                        if (!groupCell) return;
+
+                        const groupCode = groupCell.innerText.trim();
+                        let matchesGroup = (currentUser.level === 'Admin' || groupCode === currentUser.group);
+
+                        if (matchesGroup) {
+                            groupVisibleCount++;
+                            if (groupVisibleCount <= groupLimit) {
+                                row.style.display = '';
+                            } else {
+                                row.style.display = 'none';
+                            }
+                        } else {
+                            row.style.display = 'none';
+                        }
+                    });
+                }
+
+                function applyDashboardSettings() {
+                    const defaults = {
+                        agents: { show: true, count: 5, order: 2 },
+                        history: { show: true, count: 10, order: 3 },
+                        agentGroup: { show: true, count: 5, order: 1 }
+                    };
+                    const stored = localStorage.getItem('dp_admin_dashboard_options');
+                    const settings = stored ? JSON.parse(stored) : defaults;
+
+                    // Toggle Areas (Wrapper)
+                    const groupArea = document.getElementById('dashboard-group-area');
+                    const agentsArea = document.getElementById('dashboard-agents-area');
+                    const historyArea = document.getElementById('dashboard-history-area');
+
+                    if (groupArea) {
+                        groupArea.style.display = (settings.agentGroup && settings.agentGroup.show) ? 'block' : 'none';
+                    }
+                    if (agentsArea) {
+                        agentsArea.style.display = (settings.agents && settings.agents.show) ? 'block' : 'none';
+                    }
+                    if (historyArea) {
+                        historyArea.style.display = (settings.history && settings.history.show) ? 'block' : 'none';
+                    }
+
+                    // Apply Order (Re-append to parent)
+                    // Parent container for these areas is likely the main content area or a specific container.
+                    // Based on HTML structure, they are direct children of a container or main tag.
+                    // Let's find the common parent. logic:
+                    // groupArea previous sibling is the stats cards row.
+                    // We need to re-order them relative to each other.
+
+                    if (groupArea && agentsArea && historyArea) {
+                        const parent = groupArea.parentNode;
+
+                        const areaMap = [
+                            { el: groupArea, order: settings.agentGroup ? (settings.agentGroup.order || 1) : 1 },
+                            { el: agentsArea, order: settings.agents ? (settings.agents.order || 2) : 2 },
+                            { el: historyArea, order: settings.history ? (settings.history.order || 3) : 3 }
+                        ];
+
+                        areaMap.sort((a, b) => a.order - b.order);
+
+                        areaMap.forEach(item => {
+                            parent.appendChild(item.el);
+                        });
+                    }
+                }
+
+                // Helper toast (if not in common.js globally available yet for this page type)
+                // Or reuse common one if existing.
+                // We will assume 'showToast' is global or we use a local simple one.
+                // Actually, let's use the one we added in HTML if exists, or global.
+                // js/common.js usually has 'showToast'.
+            </script>
 </body>
 
 </html>

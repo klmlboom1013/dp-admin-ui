@@ -547,6 +547,9 @@
             const checkboxes = document.querySelectorAll('#availableAgentList input:checked');
             if (checkboxes.length === 0) return;
 
+            const ownerGroup = document.getElementById('ownerGroupContainer').dataset.currentGroup || 'PD';
+            const now = new Date().toISOString().slice(0, 16).replace('T', ' ');
+
             checkboxes.forEach(cb => {
                 const name = cb.nextElementSibling.querySelector('strong').innerText;
                 const id = cb.value;
@@ -555,15 +558,21 @@
                 tr.style.cursor = 'pointer';
                 tr.dataset.status = 'STOPPED';
                 tr.innerHTML = `
-                    <td class="ps-4"><div class="form-check"><input class="form-check-input row-checkbox" type="checkbox" disabled></div></td>
-                    <td class="fw-bold text-muted">${id}</td>
+                    <td class="ps-4">
+                        <div class="form-check">
+                            <input class="form-check-input row-checkbox" type="checkbox" disabled>
+                        </div>
+                    </td>
                     <td>
                         <div class="fw-bold">
                             ${name}
                             <span class="badge bg-light text-secondary border ms-1">DEV</span>
                         </div>
                     </td>
+                    <td><span class="badge rounded-pill text-bg-secondary bg-opacity-75">${ownerGroup}</span></td>
+                    <td>192.168.0.100</td>
                     <td><span class="badge bg-danger bg-opacity-10 text-danger border border-danger">STOPPED</span></td>
+                    <td>${now}</td>
                     <td class="text-end pe-4">
                         <button class="btn btn-sm btn-outline-info me-1" title="Console View" onclick="event.stopPropagation(); window.location.href='agent-details.html?id=${id}&from=group'">
                             <i class="bi bi-terminal"></i>
@@ -571,12 +580,11 @@
                         <button class="btn btn-sm btn-outline-secondary btn-edit-agent me-1" title="Edit Agent" onclick="event.stopPropagation(); window.location.href='agent-form.html?id=${id}&from=group'">
                             <i class="bi bi-pencil"></i>
                         </button>
-                        <button class="btn btn-sm btn-outline-danger btn-remove-agent" onclick="event.stopPropagation(); removeAgent(this)">
+                        <button class="btn btn-sm btn-outline-danger btn-remove-agent" title="Remove from Group" onclick="event.stopPropagation(); removeAgent(this)">
                             <i class="bi bi-dash-lg"></i>
                         </button>
                     </td>
                 `;
-                // No click event needed for new items in Edit Mode (selection disabled)
                 tableBody.appendChild(tr);
             });
 
@@ -608,7 +616,7 @@
 
             const selectedAgents = Array.from(selectedRows).map(row => {
                 return {
-                    name: row.querySelector('td:nth-child(3) .fw-bold').childNodes[0].textContent.trim(),
+                    name: row.querySelector('td:nth-child(2) .fw-bold').childNodes[0].textContent.trim(),
                     serverType: row.dataset.serverType || (row.querySelector('.badge.bg-primary') ? 'PROD' : 'DEV')
                 };
             });
@@ -639,7 +647,7 @@
                     agentNames.forEach(name => {
                         console.log(`[PARALLEL] Sending ${action} to ${name}`);
                         setTimeout(() => {
-                            showGlobalToast(`[${name}] ${action} Completed!`);
+                            showGlobalToast(`[${name}]${action} Completed!`);
                             checkCompletion();
                         }, Math.random() * 2000 + 500);
                     });
@@ -649,7 +657,7 @@
                     agentNames.forEach((name, index) => {
                         setTimeout(() => {
                             console.log(`[SEQUENTIAL] Sending ${action} to ${name}`);
-                            showGlobalToast(`[${name}] ${action} Completed! (${index + 1}/${agentNames.length})`);
+                            showGlobalToast(`[${name}]${action} Completed!(${index + 1}/${agentNames.length})`);
                             checkCompletion();
                         }, delay);
                         delay += 1500;
@@ -660,7 +668,7 @@
             if (prodAgents.length > 0) {
                 showProdSafetyConfirm(action, prodAgents, executeAction);
             } else {
-                const confirmMsg = `[${mode}] 모드로 ${agentNames.length}개의 에이전트에 [${action}] 명령을 수행하시겠습니까?\n\n대상: ${agentNames.join(', ')}`;
+                const confirmMsg = `[${mode}] 모드로 ${agentNames.length}개의 에이전트에[${action}] 명령을 수행하시겠습니까 ?\n\n대상: ${agentNames.join(', ')} `;
                 showConfirm(confirmMsg, executeAction);
             }
         }
@@ -715,12 +723,12 @@
             }
 
             toastEl.innerHTML = `
-                <div class="d-flex">
+            < div class="d-flex" >
                     <div class="toast-body">
                         ${msg}
                     </div>
                     <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-                </div>
+                </div >
             `;
 
             container.appendChild(toastEl);

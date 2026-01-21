@@ -243,10 +243,10 @@
                                         onclick="deleteAgent(this)"><i class="bi bi-trash"></i></button>
                                 </td>
                             </tr>
-                            <tr data-status="STARTING" data-server-type="PROD">
+                            <tr data-status="RUNNING" data-server-type="PROD">
                                 <td class="ps-4">
                                     <div class="form-check">
-                                        <input class="form-check-input row-checkbox" type="checkbox" disabled>
+                                        <input class="form-check-input row-checkbox" type="checkbox">
                                     </div>
                                 </td>
 
@@ -261,16 +261,18 @@
                                 <td><span class="badge rounded-pill text-bg-secondary bg-opacity-75">SO</span></td>
                                 <td>10.20.30.43:8080</td>
                                 <td><span
-                                        class="badge bg-info bg-opacity-10 text-info border border-info">STARTING</span>
+                                        class="badge bg-success bg-opacity-10 text-success border border-success">RUNNING</span>
                                 </td>
                                 <td>2024-01-19 11:30</td>
                                 <td class="text-end pe-4">
-                                    <a href="#" class="btn btn-sm btn-outline-info me-1 disabled" title="Console"
-                                        aria-disabled="true"><i class="bi bi-terminal"></i></a>
-                                    <a href="#" class="btn btn-sm btn-outline-secondary me-1 disabled" title="Edit"
-                                        aria-disabled="true"><i class="bi bi-pencil"></i></a>
+                                    <a href="./agent-details.html?id=A-005&name=Order-API-02&ip=10.20.30.43&port=8080&serverType=PROD"
+                                        class="btn btn-sm btn-outline-info me-1" title="Console"><i
+                                            class="bi bi-terminal"></i></a>
+                                    <a href="./agent-form.html?id=A-005&name=Order-API-02&desc=Order Processing API&ip=10.20.30.43&port=8080&serverType=PROD"
+                                        class="btn btn-sm btn-outline-secondary me-1" title="Edit"><i
+                                            class="bi bi-pencil"></i></a>
                                     <button class="btn btn-sm btn-outline-danger" title="Delete"
-                                        onclick="deleteAgent(this)" disabled><i class="bi bi-trash"></i></button>
+                                        onclick="deleteAgent(this)"><i class="bi bi-trash"></i></button>
                                 </td>
                             </tr>
                             <tr data-status="RESTARTING" data-server-type="PROD">
