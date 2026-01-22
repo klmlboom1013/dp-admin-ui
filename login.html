@@ -93,6 +93,26 @@
         <div id="signupForm" style="display: none;">
             <p class="text-center text-muted mb-3">서비스 이용 신청 정보를 입력하세요</p>
             <form onsubmit="handleSignup(event)">
+                <div class="form-floating mb-2">
+                    <input type="text" class="form-control" id="newUserId" placeholder="아이디(ID)" required>
+                    <label for="newUserId" class="text-secondary">아이디(ID)</label>
+                </div>
+
+                <div class="row g-2 mb-2">
+                    <div class="col-md">
+                        <div class="form-floating">
+                            <input type="password" class="form-control" id="newUserPw" placeholder="비밀번호" required>
+                            <label for="newUserPw" class="text-secondary">비밀번호</label>
+                        </div>
+                    </div>
+                    <div class="col-md">
+                        <div class="form-floating">
+                            <input type="password" class="form-control" id="newUserPwConfirm" placeholder="비밀번호 확인"
+                                required>
+                            <label for="newUserPwConfirm" class="text-secondary">비밀번호 확인</label>
+                        </div>
+                    </div>
+                </div>
                 <div class="row g-2 mb-2">
                     <div class="col-md">
                         <div class="form-floating">
@@ -255,6 +275,15 @@
             // HTML5 Form Validation is automatically triggered before this function
             // because of type="submit" and required attributes.
             // If we are here, inputs are valid.
+
+            // 비밀번호 확인 검증
+            const pw = document.getElementById('newUserPw').value;
+            const pwConfirm = document.getElementById('newUserPwConfirm').value;
+
+            if (pw !== pwConfirm) {
+                showAlert('비밀번호가 일치하지 않습니다.');
+                return;
+            }
 
             // 소속 값 처리 (Datalist 사용으로 단일 input 값만 확인하면 됨)
             const finalOrgName = document.getElementById('orgName').value;
